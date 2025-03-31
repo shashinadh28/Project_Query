@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useMemo } from "react";
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, 
@@ -12,7 +13,7 @@ import {
 const SearchIcon = () => <span>🔍</span>;
 const SortIcon = () => <span>↕️</span>;
 
-const DataTable = ({ tableData }) => {
+const DataTable = ({ tableData, darkMode }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   
@@ -113,7 +114,11 @@ const DataTable = ({ tableData }) => {
   
   // No data case
   if (!tableData || tableData.length === 0) {
-    return <Typography align="center">No data available</Typography>;
+    return (
+      <Typography variant="body1" style={{ textAlign: 'center', padding: '20px' }}>
+        No results found
+      </Typography>
+    );
   }
 
   return (
