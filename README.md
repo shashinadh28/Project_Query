@@ -2,6 +2,78 @@
 
 A web-based SQL query execution interface built for the Atlan Frontend Internship Task.
 
+## Documentation
+
+### Project Overview
+SQL Query Runner is a React-based application that allows users to:
+- Write and execute SQL queries in a syntax-highlighted editor
+- Choose from predefined queries categorized by data type (Students, Teachers, Employees)
+- View query results in a paginated, sortable table
+- Export query results to CSV format for further analysis
+- Toggle between light and dark modes for better visibility
+- Manage large datasets with efficient pagination and filtering
+
+### Technical Documentation
+
+#### Component Structure
+1. **App.jsx**
+   - Main application container
+   - Manages global state and theme
+   - Handles query execution logic
+
+2. **QueryEditor.jsx**
+   - Syntax-highlighted SQL editor
+   - Predefined query selection
+   - Query validation
+
+3. **DataTable.jsx**
+   - Custom table component
+   - Handles sorting, filtering, and pagination
+   - CSV export functionality
+
+#### Data Flow
+1. User selects a data category
+2. User writes or selects a query
+3. Query is parsed and executed
+4. Results are displayed in the table
+5. User can sort, filter, and export results
+
+#### State Management
+- Uses React hooks for state management
+- Maintains separate states for:
+  - Query text
+  - Selected category
+  - Table data
+  - Pagination
+  - Theme mode
+
+#### Performance Considerations
+- Client-side pagination
+- Memoized filtering and sorting
+- Optimized rendering
+- Efficient data processing
+
+### User Documentation
+
+#### How to Use
+1. Select a data category (Students, Teachers, Employees)
+2. Choose a predefined query or write your own
+3. Click "Run Query" to execute
+4. Use the table controls to:
+   - Sort by clicking column headers
+   - Filter using the search box
+   - Navigate through pages
+   - Export to CSV
+
+#### Features
+- Syntax-highlighted SQL editor
+- Multiple data categories
+- Predefined queries
+- Interactive results table
+- Dark mode support
+- CSV export
+- Responsive design
+
 ## Problem Statement
 The task required building a SQL query execution interface that:
 - Accepts SQL queries through a text area or code editor
