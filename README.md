@@ -2,6 +2,25 @@
 
 A web-based SQL query execution interface built for the Atlan Frontend Internship Task.
 
+## Project Structure
+```
+sql-query-runner/
+├── src/
+│   ├── components/
+│   │   ├── DataTable.jsx    (Table for showing results)
+│   │   └── QueryEditor.jsx  (SQL editor component)
+│   │
+│   ├── App.jsx             (Main application)
+│   ├── App.scss            (Main styles)
+│   └── main.jsx            (Entry point)
+├── public/                 (Static files)
+│   ├── system-architecture.svg
+│   └── er-diagram.svg
+├── package.json           (Dependencies)
+├── vite.config.js         (Vite configuration)
+└── README.md              (Project documentation)
+```
+
 ## Documentation
 
 ### Project Overview
