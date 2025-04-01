@@ -75,22 +75,10 @@ export const queries = [
     data: generateLargeDataset(500, "students").filter(student => parseFloat(student.gpa) > 3.5),
   },
   {
-    id: 3,
-    name: "Recently Admitted Students",
-    query: "SELECT roll_number, name, grade, admission_date FROM students WHERE admission_date > '2022-01-01';",
-    data: generateLargeDataset(500, "students").filter(student => new Date(student.admission_date) > new Date('2022-01-01')),
-  },
-  {
     id: 4,
     name: "Students by Major",
     query: "SELECT roll_number, name, grade, major, gpa FROM students WHERE major = 'Computer Science';",
     data: generateLargeDataset(500, "students").filter(student => student.major === 'Computer Science'),
-  },
-  {
-    id: 5,
-    name: "Students with Perfect Attendance",
-    query: "SELECT roll_number, name, grade, attendance FROM students WHERE attendance > 95;",
-    data: generateLargeDataset(500, "students").filter(student => student.attendance > 95),
   },
   
   // Teacher queries
@@ -111,12 +99,6 @@ export const queries = [
     name: "Science Department Teachers",
     query: "SELECT employee_id, name, subject, experience FROM teachers WHERE department = 'Science';",
     data: generateLargeDataset(200, "teachers").filter(teacher => teacher.department === 'Science'),
-  },
-  {
-    id: 9,
-    name: "Recently Joined Teachers",
-    query: "SELECT employee_id, name, department, joining_date FROM teachers WHERE joining_date > '2020-01-01';",
-    data: generateLargeDataset(200, "teachers").filter(teacher => new Date(teacher.joining_date) > new Date('2020-01-01')),
   },
   {
     id: 10,
@@ -143,12 +125,6 @@ export const queries = [
     name: "Management Staff",
     query: "SELECT employee_id, name, department, role FROM employees WHERE role = 'Manager';",
     data: generateLargeDataset(300, "employees").filter(employee => employee.role === 'Manager'),
-  },
-  {
-    id: 14,
-    name: "Recently Hired Employees",
-    query: "SELECT employee_id, name, department, hire_date FROM employees WHERE hire_date > '2022-01-01';",
-    data: generateLargeDataset(300, "employees").filter(employee => new Date(employee.hire_date) > new Date('2022-01-01')),
   },
   {
     id: 15,

@@ -1,0 +1,81 @@
+<svg width="700" height="600" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .box { fill: white; stroke: #1976d2; stroke-width: 2; }
+    .inner-box { fill: #f5f7fa; stroke: #1976d2; stroke-width: 1; }
+    .arrow { stroke: #1976d2; stroke-width: 2; marker-end: url(#arrowhead); }
+    .text { font-family: Arial, sans-serif; font-size: 14px; text-anchor: middle; }
+    .title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle; }
+    .component { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+  </style>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2" />
+    </marker>
+  </defs>
+  
+  <!-- Top Level Container -->
+  <rect class="box" x="150" y="20" width="400" height="60" rx="5" ry="5" />
+  <text class="title" x="350" y="55">SQL Query Runner (Frontend)</text>
+  
+  <!-- Arrow down -->
+  <line class="arrow" x1="350" y1="80" x2="350" y2="120" />
+  <text class="text" x="400" y="100">User Interaction</text>
+  
+  <!-- React Application -->
+  <rect class="box" x="150" y="120" width="400" height="60" rx="5" ry="5" />
+  <text class="title" x="350" y="155">React Application</text>
+  
+  <!-- Component Layer -->
+  <rect class="box" x="100" y="220" width="250" height="200" rx="5" ry="5" />
+  <text class="title" x="225" y="245">Component Layer</text>
+  
+  <!-- State Management -->
+  <rect class="box" x="370" y="220" width="250" height="200" rx="5" ry="5" />
+  <text class="title" x="495" y="245">State Management</text>
+  
+  <!-- Component Layer Elements -->
+  <rect class="inner-box" x="125" y="260" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="225" y="282">QueryEditor</text>
+  
+  <rect class="inner-box" x="125" y="310" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="225" y="332">DataTable</text>
+  
+  <rect class="inner-box" x="125" y="360" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="225" y="382">UI Components</text>
+  
+  <!-- State Management Elements -->
+  <rect class="inner-box" x="395" y="260" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="495" y="282">Query State</text>
+  
+  <rect class="inner-box" x="395" y="310" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="495" y="332">Results State</text>
+  
+  <rect class="inner-box" x="395" y="360" width="200" height="35" rx="3" ry="3" />
+  <text class="component" x="495" y="382">Theme State</text>
+  
+  <!-- Arrows from React App to Layers -->
+  <line class="arrow" x1="300" y1="180" x2="225" y2="220" />
+  <line class="arrow" x1="400" y1="180" x2="495" y2="220" />
+  
+  <!-- Arrow connecting the layers -->
+  <line class="arrow" x1="225" y1="420" x2="350" y2="450" />
+  <line class="arrow" x1="495" y1="420" x2="350" y2="450" />
+  
+  <!-- Data Processing Layer -->
+  <rect class="box" x="150" y="450" width="400" height="130" rx="5" ry="5" />
+  <text class="title" x="350" y="475">Data Processing Layer</text>
+  
+  <!-- Data Processing Elements -->
+  <rect class="inner-box" x="175" y="490" width="150" height="35" rx="3" ry="3" />
+  <text class="component" x="250" y="512">Mock Data Store</text>
+  
+  <rect class="inner-box" x="375" y="490" width="150" height="35" rx="3" ry="3" />
+  <text class="component" x="450" y="512">Query Parser</text>
+  
+  <rect class="inner-box" x="175" y="535" width="150" height="35" rx="3" ry="3" />
+  <text class="component" x="250" y="557">Data Filtering</text>
+  
+  <rect class="inner-box" x="375" y="535" width="150" height="35" rx="3" ry="3" />
+  <text class="component" x="450" y="557">CSV Export</text>
+</svg> 

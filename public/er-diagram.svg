@@ -1,0 +1,98 @@
+<svg width="900" height="600" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .entity { fill: white; stroke: #1976d2; stroke-width: 2; }
+    .arrow { stroke: #1976d2; stroke-width: 2; marker-end: url(#arrowhead); }
+    .text { font-family: Arial, sans-serif; font-size: 14px; text-anchor: middle; }
+    .title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; text-anchor: middle; }
+    .attribute { font-family: Arial, sans-serif; font-size: 12px; }
+    .primary-key { font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; }
+  </style>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1976d2" />
+    </marker>
+  </defs>
+  
+  <!-- Student Entity -->
+  <rect class="entity" x="50" y="50" width="200" height="220" rx="5" ry="5" />
+  <text class="title" x="150" y="80">Student</text>
+  <line x1="50" y1="90" x2="250" y2="90" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="70" y="115" text-anchor="start">id (PK)</text>
+  <text class="attribute" x="70" y="135" text-anchor="start">roll_number</text>
+  <text class="attribute" x="70" y="155" text-anchor="start">name</text>
+  <text class="attribute" x="70" y="175" text-anchor="start">email</text>
+  <text class="attribute" x="70" y="195" text-anchor="start">grade</text>
+  <text class="attribute" x="70" y="215" text-anchor="start">major</text>
+  <text class="attribute" x="70" y="235" text-anchor="start">gpa</text>
+  <text class="attribute" x="70" y="255" text-anchor="start">admission_date</text>
+  
+  <!-- Teacher Entity -->
+  <rect class="entity" x="350" y="50" width="200" height="220" rx="5" ry="5" />
+  <text class="title" x="450" y="80">Teacher</text>
+  <line x1="350" y1="90" x2="550" y2="90" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="370" y="115" text-anchor="start">id (PK)</text>
+  <text class="attribute" x="370" y="135" text-anchor="start">employee_id</text>
+  <text class="attribute" x="370" y="155" text-anchor="start">name</text>
+  <text class="attribute" x="370" y="175" text-anchor="start">email</text>
+  <text class="attribute" x="370" y="195" text-anchor="start">department</text>
+  <text class="attribute" x="370" y="215" text-anchor="start">subject</text>
+  <text class="attribute" x="370" y="235" text-anchor="start">experience</text>
+  <text class="attribute" x="370" y="255" text-anchor="start">salary</text>
+  
+  <!-- Employee Entity -->
+  <rect class="entity" x="650" y="50" width="200" height="220" rx="5" ry="5" />
+  <text class="title" x="750" y="80">Employee</text>
+  <line x1="650" y1="90" x2="850" y2="90" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="670" y="115" text-anchor="start">id (PK)</text>
+  <text class="attribute" x="670" y="135" text-anchor="start">employee_id</text>
+  <text class="attribute" x="670" y="155" text-anchor="start">name</text>
+  <text class="attribute" x="670" y="175" text-anchor="start">email</text>
+  <text class="attribute" x="670" y="195" text-anchor="start">department</text>
+  <text class="attribute" x="670" y="215" text-anchor="start">role</text>
+  <text class="attribute" x="670" y="235" text-anchor="start">salary</text>
+  <text class="attribute" x="670" y="255" text-anchor="start">hire_date</text>
+
+  <!-- Arrows connecting entities to queries -->
+  <line class="arrow" x1="150" y1="270" x2="150" y2="320" />
+  <line class="arrow" x1="450" y1="270" x2="450" y2="320" />
+  <line class="arrow" x1="750" y1="270" x2="750" y2="320" />
+  
+  <!-- Student Queries Entity -->
+  <rect class="entity" x="50" y="320" width="200" height="150" rx="5" ry="5" />
+  <text class="title" x="150" y="350">Student Data Queries</text>
+  <line x1="50" y1="360" x2="250" y2="360" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="70" y="385" text-anchor="start">query_id (PK)</text>
+  <text class="attribute" x="70" y="405" text-anchor="start">name</text>
+  <text class="attribute" x="70" y="425" text-anchor="start">sql_statement</text>
+  <text class="attribute" x="70" y="445" text-anchor="start">description</text>
+  
+  <!-- Teacher Queries Entity -->
+  <rect class="entity" x="350" y="320" width="200" height="150" rx="5" ry="5" />
+  <text class="title" x="450" y="350">Teacher Data Queries</text>
+  <line x1="350" y1="360" x2="550" y2="360" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="370" y="385" text-anchor="start">query_id (PK)</text>
+  <text class="attribute" x="370" y="405" text-anchor="start">name</text>
+  <text class="attribute" x="370" y="425" text-anchor="start">sql_statement</text>
+  <text class="attribute" x="370" y="445" text-anchor="start">description</text>
+  
+  <!-- Employee Queries Entity -->
+  <rect class="entity" x="650" y="320" width="200" height="150" rx="5" ry="5" />
+  <text class="title" x="750" y="350">Employee Data Queries</text>
+  <line x1="650" y1="360" x2="850" y2="360" stroke="#1976d2" stroke-width="1" />
+  
+  <text class="primary-key" x="670" y="385" text-anchor="start">query_id (PK)</text>
+  <text class="attribute" x="670" y="405" text-anchor="start">name</text>
+  <text class="attribute" x="670" y="425" text-anchor="start">sql_statement</text>
+  <text class="attribute" x="670" y="445" text-anchor="start">description</text>
+  
+  <!-- Relationship descriptions -->
+  <text class="text" x="150" y="295">has queries</text>
+  <text class="text" x="450" y="295">has queries</text>
+  <text class="text" x="750" y="295">has queries</text>
+</svg> 

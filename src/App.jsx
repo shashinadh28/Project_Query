@@ -119,40 +119,37 @@ function App() {
     // Normalize query: convert to lowercase and remove extra whitespace
     const query = queryText.trim().toLowerCase();
 
-    // IMPROVED TABLE NAME EXTRACTION
-    // Handle quoted table names, aliasing with AS, and joined tables
-    let tableMatch = query.match(/from\s+(['"`]?)(\w+)\1(?:\s+(?:as\s+)?(\w+))?/i);
+    // Find the corresponding dataset based on the query text
+    let dataset = queries.find(q => q.query.toLowerCase() === query);
     
-    if (!tableMatch) {
-      alert("Invalid query! Cannot determine table name. Format: SELECT column1, column2 FROM table;");
-      return;
-    }
-
-    // Extract actual table name from the match (group 2 contains the table name)
-    const tableName = tableMatch[2];
-    console.log("Extracted Table Name:", tableName);
-
-    // Find the corresponding dataset based on the table name
-    let dataset;
-    
-    // Try to find exact match first (from our predefined queries)
-    dataset = queries.find(q => q.query.toLowerCase() === query);
-    
-    // If no exact match, find by table name
     if (!dataset) {
+      // If no exact match, try to find by table name
+      const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1(?:\s+(?:as\s+)?(\w+))?/i);
+      if (!tableMatch) {
+        alert("Invalid query! Cannot determine table name. Format: SELECT column1, column2 FROM table;");
+        return;
+      }
+      const tableName = tableMatch[2];
+      
+      // Find the base dataset for this table
       dataset = queries.find(q => q.query.toLowerCase().includes(`from ${tableName}`));
     }
     
     if (!dataset) {
-      alert(`Table "${tableName}" not found!`);
+      alert("Query not found in predefined queries!");
+      return;
+    }
+
+    // For base data queries (SELECT * FROM table), use the data directly
+    if (query.match(/select\s+\*\s+from/i)) {
+      setResult(dataset.data);
       return;
     }
 
     // Clone data to avoid modifying original
     let data = [...dataset.data];
 
-    // IMPROVED COLUMN EXTRACTION
-    // Handle various SELECT patterns including * and functions like COUNT(), SUM(), etc.
+    // Extract columns from the SELECT clause
     let columnMatch;
     let useAllColumns = false;
     
@@ -188,21 +185,17 @@ function App() {
       columns = columns.map(col => col === "*" ? Object.keys(data[0]) : col).flat();
     }
 
-    // IMPROVED WHERE CLAUSE PARSING
-    // Support multiple conditions with better value extraction
+    // Apply WHERE clause if present
     let filteredData = [...data];
-    
-    // More robust WHERE clause detection
     const whereClauseMatch = query.match(/where\s+(.*?)(?:order by|group by|limit|$)/i);
     
     if (whereClauseMatch) {
       const whereClause = whereClauseMatch[1].trim();
       console.log("WHERE Clause:", whereClause);
       
-      // Split by AND if multiple conditions exist (simple implementation)
+      // Split by AND if multiple conditions exist
       const conditions = whereClause.split(/\s+and\s+/i);
       
-      // Apply each condition
       conditions.forEach(condition => {
         // Support =, >, <, >=, <=, <>, LIKE operators
         const conditionMatch = condition.match(/(\w+)\s*([=<>!]+|like|in)\s*(['"]?)([^'"]+)\3/i);
@@ -222,24 +215,46 @@ function App() {
           switch(operator.toLowerCase()) {
             case "=":
               filteredData = filteredData.filter(row => {
-                // Handle type conversion for comparison
                 if (typeof value === 'number') {
                   return Number(row[column]) === value;
+                }
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) === new Date(value);
                 }
                 return String(row[column]).toLowerCase() === String(value).toLowerCase();
               });
               break;
             case ">":
-              filteredData = filteredData.filter(row => Number(row[column]) > value);
+              filteredData = filteredData.filter(row => {
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) > new Date(value);
+                }
+                return Number(row[column]) > value;
+              });
               break;
             case "<":
-              filteredData = filteredData.filter(row => Number(row[column]) < value);
+              filteredData = filteredData.filter(row => {
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) < new Date(value);
+                }
+                return Number(row[column]) < value;
+              });
               break;
             case ">=":
-              filteredData = filteredData.filter(row => Number(row[column]) >= value);
+              filteredData = filteredData.filter(row => {
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) >= new Date(value);
+                }
+                return Number(row[column]) >= value;
+              });
               break;
             case "<=":
-              filteredData = filteredData.filter(row => Number(row[column]) <= value);
+              filteredData = filteredData.filter(row => {
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) <= new Date(value);
+                }
+                return Number(row[column]) <= value;
+              });
               break;
             case "<>":
             case "!=":
@@ -247,33 +262,63 @@ function App() {
                 if (typeof value === 'number') {
                   return Number(row[column]) !== value;
                 }
+                if (column.toLowerCase().includes('date')) {
+                  return new Date(row[column]) !== new Date(value);
+                }
                 return String(row[column]).toLowerCase() !== String(value).toLowerCase();
               });
               break;
             case "like":
-              // Simple LIKE implementation - convert to regex
-              const likePattern = value.replace(/%/g, '.*');
-              const regex = new RegExp(`^${likePattern}$`, 'i');
+              const pattern = value.replace(/%/g, '.*');
+              const regex = new RegExp(pattern, 'i');
               filteredData = filteredData.filter(row => regex.test(String(row[column])));
+              break;
+            case "in":
+              const values = value.split(',').map(v => v.trim());
+              filteredData = filteredData.filter(row => values.includes(String(row[column])));
               break;
           }
         }
       });
     }
 
-    // PROJECT: Select only the requested columns
-    const projectedData = filteredData.map((row) => {
-      let filteredRow = {};
-      columns.forEach((col) => {
+    // Apply ORDER BY if present
+    const orderByMatch = query.match(/order by\s+(\w+)\s+(asc|desc)?/i);
+    if (orderByMatch) {
+      const [_, column, direction = 'asc'] = orderByMatch;
+      filteredData.sort((a, b) => {
+        const aVal = a[column];
+        const bVal = b[column];
+        
+        if (typeof aVal === 'number') {
+          return direction.toLowerCase() === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+        
+        return direction.toLowerCase() === 'asc' 
+          ? String(aVal).localeCompare(String(bVal))
+          : String(bVal).localeCompare(String(aVal));
+      });
+    }
+
+    // Apply LIMIT if present
+    const limitMatch = query.match(/limit\s+(\d+)/i);
+    if (limitMatch) {
+      const limit = parseInt(limitMatch[1]);
+      filteredData = filteredData.slice(0, limit);
+    }
+
+    // Select only the requested columns
+    const result = filteredData.map(row => {
+      const selectedRow = {};
+      columns.forEach(col => {
         if (row.hasOwnProperty(col)) {
-          filteredRow[col] = row[col];
+          selectedRow[col] = row[col];
         }
       });
-      return filteredRow;
+      return selectedRow;
     });
 
-    console.log("Final Result:", projectedData);
-    setResult(projectedData);
+    setResult(result);
   };
 
   // Handle query change from the QueryEditor component
