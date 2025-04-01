@@ -116,6 +116,14 @@ function App() {
 
     console.log("Executing Query:", queryText);
 
+    // Check if this is an exact match for a predefined query
+    const exactMatchQuery = queries.find(q => q.query.trim() === queryText.trim());
+    if (exactMatchQuery) {
+      console.log("Using predefined query data directly");
+      setResult(exactMatchQuery.data);
+      return;
+    }
+
     // Normalize query: convert to lowercase and remove extra whitespace
     const query = queryText.trim().toLowerCase();
 
@@ -229,6 +237,13 @@ function App() {
                 if (column.toLowerCase().includes('date')) {
                   return new Date(row[column]) > new Date(value);
                 }
+                // Special handling for string numbers like GPA
+                if (typeof row[column] === 'string' && !isNaN(parseFloat(row[column]))) {
+                  const parsedValue = parseFloat(row[column]);
+                  console.log(`Comparing GPA: ${row[column]} (${typeof row[column]}) -> ${parsedValue} > ${value}`, parsedValue > value);
+                  // Force both to be numbers and use strict comparison
+                  return Number(parsedValue) > Number(value);
+                }
                 return Number(row[column]) > value;
               });
               break;
@@ -236,6 +251,10 @@ function App() {
               filteredData = filteredData.filter(row => {
                 if (column.toLowerCase().includes('date')) {
                   return new Date(row[column]) < new Date(value);
+                }
+                // Special handling for string numbers like GPA
+                if (typeof row[column] === 'string' && !isNaN(parseFloat(row[column]))) {
+                  return Number(parseFloat(row[column])) < Number(value);
                 }
                 return Number(row[column]) < value;
               });
@@ -245,6 +264,10 @@ function App() {
                 if (column.toLowerCase().includes('date')) {
                   return new Date(row[column]) >= new Date(value);
                 }
+                // Special handling for string numbers like GPA
+                if (typeof row[column] === 'string' && !isNaN(parseFloat(row[column]))) {
+                  return Number(parseFloat(row[column])) >= Number(value);
+                }
                 return Number(row[column]) >= value;
               });
               break;
@@ -252,6 +275,10 @@ function App() {
               filteredData = filteredData.filter(row => {
                 if (column.toLowerCase().includes('date')) {
                   return new Date(row[column]) <= new Date(value);
+                }
+                // Special handling for string numbers like GPA
+                if (typeof row[column] === 'string' && !isNaN(parseFloat(row[column]))) {
+                  return Number(parseFloat(row[column])) <= Number(value);
                 }
                 return Number(row[column]) <= value;
               });
@@ -326,6 +353,11 @@ function App() {
     const selectedQuery = queries.find(q => q.id === queryId);
     if (selectedQuery) {
       setSelectedQuery(selectedQuery);
+      setQueryText(selectedQuery.query);
+      
+      // Immediately execute the query and show results
+      console.log("Auto-executing selected query:", selectedQuery.query);
+      setResult(selectedQuery.data);
     }
   };
 
