@@ -6,12 +6,13 @@
   padding: 20px;
   width: 100%;
   transition: background-color 0.3s ease;
+  position: relative; // Add this to create positioning context
   // background-color: #f5f7fa; // Light background for the entire app
 }
 
 .app-container {
   text-align: center;
-  padding: 25px;
+  padding: 25px 25px 50px 25px; // Increased bottom padding for better scrolling
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -21,21 +22,30 @@
   flex-direction: column;
   align-items: center;
   margin: 0 auto 20px auto;
+  position: fixed; // Fix the position
+  left: 50%; // Center horizontally
+  top: 50%; // Center vertically
+  transform: translate(-50%, -50%); // Center both horizontally and vertically
+  height: 95vh; // Increased from 85vh to 95vh for more height
+  max-height: 950px; // Increased from 850px to 950px
+  overflow-y: auto; // Add scrolling if content is too large
   
-  // For laptops and larger screens, position more to the right
-  transform: translateX(100%); // Increased to 100% for stronger right positioning
+  // Improve scrolling behavior
+  &:after {
+    content: "";
+    display: block;
+    height: 30px; // Add space at the bottom for better scrolling
+    width: 100%;
+  }
   
   // Remove transform from transition to prevent shifts during state changes
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   
-  // Force position to remain stable when results appear
-  &.results-showing {
-    transform: translateX(100%) !important; // Same as normal state
-  }
-  
   // Additional class to lock position when running query
   &.position-locked {
-    transform: translateX(100%) !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     transition: none !important; // Disable all transitions temporarily
   }
   
@@ -161,6 +171,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 20px; // Add padding at the bottom of results
   
   h6 {
     margin-bottom: 15px;
