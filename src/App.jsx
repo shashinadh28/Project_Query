@@ -116,38 +116,36 @@ function App() {
 
     console.log("Executing query:", queryText);
 
-    // Normalize query: convert to lowercase and remove extra whitespace
-    const query = queryText.trim().toLowerCase();
-
-    // Find the corresponding dataset based on the query text
-    let dataset = queries.find(q => q.query.toLowerCase() === query);
+    // First, try to find an exact match for the selected query
+    let dataset = queries.find(q => q.query.toLowerCase() === queryText.trim().toLowerCase());
     
-    console.log("Found exact match for query:", dataset ? "yes" : "no");
-
     if (!dataset) {
       // If no exact match, try to find by table name
-      const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1(?:\s+(?:as\s+)?(\w+))?/i);
+      const tableMatch = queryText.toLowerCase().match(/from\s+(['"]?)(\w+)\1/i);
       if (!tableMatch) {
-        alert("Invalid query! Cannot determine table name. Format: SELECT column1, column2 FROM table;");
+        alert("Invalid query! Cannot determine table name.");
         return;
       }
-      const tableName = tableMatch[2];
       
-      // Find the base dataset for this table
-      dataset = queries.find(q => {
-        const baseQuery = q.query.toLowerCase();
-        return baseQuery.includes(`from ${tableName}`) && baseQuery.startsWith("select * from");
-      });
+      const tableName = tableMatch[2].toLowerCase();
+      console.log("Looking for table:", tableName);
+      
+      // Find the base query for this table type
+      if (tableName === "students") {
+        dataset = queries.find(q => q.name === "Student Data");
+      } else if (tableName === "teachers") {
+        dataset = queries.find(q => q.name === "Teacher Data");
+      } else if (tableName === "employees") {
+        dataset = queries.find(q => q.name === "Employee Data");
+      }
     }
-    
-    if (!dataset) {
-      alert("Query not found in predefined queries!");
+
+    if (!dataset || !dataset.data) {
+      alert("No results found for this query.");
       return;
     }
 
-    console.log("Dataset found:", dataset.name);
-
-    // Set the result
+    console.log("Found dataset:", dataset.name);
     setResult(dataset.data);
   };
 
