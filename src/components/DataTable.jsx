@@ -1,9 +1,8 @@
-import React from 'react';
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, 
   TableRow, Paper, Button, Box, Typography, 
-  TextField, InputAdornment, IconButton, 
+  TextField, InputAdornment, 
   Select, MenuItem, FormControl, InputLabel,
   useTheme
 } from '@mui/material';
@@ -13,7 +12,7 @@ import {
 const SearchIcon = () => <span>🔍</span>;
 const SortIcon = () => <span>↕️</span>;
 
-const DataTable = ({ data, darkMode }) => {
+const DataTable = ({ data }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   
@@ -22,10 +21,8 @@ const DataTable = ({ data, darkMode }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  // Get columns from the first data row
   const columns = data && data.length > 0 ? Object.keys(data[0]) : [];
   
-  // Filter data based on search query
   const filteredData = useMemo(() => {
     if (!data || data.length === 0 || !searchQuery) {
       return data;
@@ -38,7 +35,6 @@ const DataTable = ({ data, darkMode }) => {
     });
   }, [data, searchQuery]);
   
-  // Sort data based on sort config
   const sortedData = useMemo(() => {
     if (!filteredData || filteredData.length === 0 || !sortConfig.key) {
       return filteredData;
@@ -63,7 +59,6 @@ const DataTable = ({ data, darkMode }) => {
     });
   }, [filteredData, sortConfig]);
   
-  // Paginate the sorted data
   const paginatedData = useMemo(() => {
     if (!sortedData || sortedData.length === 0) {
       return [];
@@ -72,7 +67,6 @@ const DataTable = ({ data, darkMode }) => {
     return sortedData.slice(startIndex, startIndex + rowsPerPage);
   }, [sortedData, currentPage, rowsPerPage]);
   
-  // Request sort for a column
   const requestSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -81,18 +75,14 @@ const DataTable = ({ data, darkMode }) => {
     setSortConfig({ key, direction });
   };
   
-  // Calculate total pages
   const totalPages = Math.ceil((sortedData?.length || 0) / rowsPerPage);
 
-  // Export data to CSV
   const exportToCSV = () => {
     if (data.length === 0) return;
     
-    // Create CSV content
     const csvHeader = columns.join(',');
     const csvContent = sortedData.map(row => {
       return columns.map(column => {
-        // Handle values with commas by wrapping in quotes
         const cellValue = row[column] === null ? '' : String(row[column]);
         return cellValue.includes(',') ? `"${cellValue}"` : cellValue;
       }).join(',');
@@ -100,7 +90,6 @@ const DataTable = ({ data, darkMode }) => {
     
     const csv = [csvHeader, ...csvContent.split('\n')].join('\n');
     
-    // Create a blob and download the file
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -112,7 +101,6 @@ const DataTable = ({ data, darkMode }) => {
     document.body.removeChild(link);
   };
   
-  // No data case
   if (!data || data.length === 0) {
     return (
       <Typography variant="body1" style={{ textAlign: 'center', padding: '20px' }}>
@@ -219,7 +207,9 @@ const DataTable = ({ data, darkMode }) => {
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Typography fontWeight="bold">{column}</Typography>
+                    <Typography fontWeight="bold">
+                      {column.replace(/_/g, ' ').toUpperCase()}
+                    </Typography>
                     {sortConfig.key === column && (
                       <Typography component="span" sx={{ ml: 1 }}>
                         {sortConfig.direction === 'asc' ? '↑' : '↓'}
@@ -257,44 +247,51 @@ const DataTable = ({ data, darkMode }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       {/* Pagination */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-        <Box>
-          <Button 
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(1)}
-            sx={{ mr: 1 }}
-          >
-            First
-          </Button>
-          <Button 
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
-        </Box>
-        
-        <Typography>
-          Page {currentPage} of {Math.max(1, totalPages)}
+      <Box className="pagination-controls">
+        <Button 
+          variant="contained" 
+          color="primary"
+          onClick={() => setCurrentPage(1)}
+          disabled={currentPage === 1}
+        >
+          First
+        </Button>
+        <Button 
+          variant="contained" 
+          color="primary"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <Typography 
+          variant="body1" 
+          className="page-indicator"
+          sx={{ 
+            backgroundColor: isDarkMode ? '#333' : '#f5f5f5',
+            color: isDarkMode ? '#e0e0e0' : 'inherit'
+          }}
+        >
+          Page {currentPage} of {totalPages || 1}
         </Typography>
-        
-        <Box>
-          <Button 
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            sx={{ mr: 1 }}
-          >
-            Next
-          </Button>
-          <Button 
-            disabled={currentPage === totalPages || totalPages === 0}
-            onClick={() => setCurrentPage(totalPages)}
-          >
-            Last
-          </Button>
-        </Box>
+        <Button 
+          variant="contained" 
+          color="primary"
+          onClick={() => setCurrentPage((prev) => prev < totalPages ? prev + 1 : prev)}
+          disabled={currentPage >= totalPages}
+        >
+          Next
+        </Button>
+        <Button 
+          variant="contained" 
+          color="primary"
+          onClick={() => setCurrentPage(totalPages)}
+          disabled={currentPage >= totalPages}
+        >
+          Last
+        </Button>
       </Box>
     </div>
   );

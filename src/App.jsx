@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { 
   Container, 
   Typography, 
-  TextField, 
   Button, 
   Box, 
   Paper,
@@ -26,9 +25,7 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
   const handleQueryChange = (event) => {
     setCurrentQuery(event.target.value);
@@ -71,8 +68,8 @@ function App() {
 
     try {
       const parsedQuery = parseQuery(query);
-      let dataset;
 
+      let dataset;
       if (query.toLowerCase().includes('students')) {
         dataset = students;
       } else if (query.toLowerCase().includes('employees')) {
@@ -123,6 +120,7 @@ function App() {
 
       setQueryResults(results);
     } catch (err) {
+      console.error('Error executing query:', err);
       setError(err.message);
       setQueryResults([]);
     } finally {
