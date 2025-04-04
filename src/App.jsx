@@ -93,7 +93,7 @@ function App() {
     }
   };
 
-  // Execute the SQL query
+  // Execute SQL query
   const executeQuery = () => {
     setLockPosition(true);
     
@@ -103,41 +103,52 @@ function App() {
     }
 
     const query = queryText.trim().toLowerCase();
+    console.log("Executing query:", query);
     
-    // Find exact matching query first
-    let dataset = queries.find(q => q.query.toLowerCase() === query);
+    // Step 1: Try to find an exact matching predefined query
+    let matchedQuery = queries.find(q => q.query.toLowerCase() === query);
     
-    if (!dataset) {
-      // Try to find match based on table name
-      const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1/i);
-      if (!tableMatch) {
-        alert("Invalid query! Cannot determine table name.");
-        return;
-      }
-      
-      const tableName = tableMatch[2];
-      const mainQueries = {
-        "students": queries.find(q => q.name === "Student Data"),
-        "teachers": queries.find(q => q.name === "Teacher Data"),
-        "employees": queries.find(q => q.name === "Employee Data")
-      };
-      
-      dataset = mainQueries[tableName];
-      
-      if (!dataset) {
-        alert("Table not found! Available tables: students, teachers, employees");
-        return;
-      }
+    if (matchedQuery) {
+      console.log("Found exact match for query");
+      setResult(matchedQuery.data);
+      return;
     }
-
-    let data = [...dataset.data];
-    let filteredData = [...data];
     
-    // Process WHERE clause if present
+    // Step 2: If no exact match, try to identify the table name
+    const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1/i);
+    if (!tableMatch) {
+      alert("Invalid query! Cannot determine table name.");
+      return;
+    }
+    
+    const tableName = tableMatch[2].toLowerCase();
+    console.log("Table name extracted:", tableName);
+    
+    // Step 3: Find base dataset for the table
+    let baseDataset;
+    if (tableName === "students") {
+      baseDataset = queries.find(q => q.name === "Student Data");
+    } else if (tableName === "teachers") {
+      baseDataset = queries.find(q => q.name === "Teacher Data");
+    } else if (tableName === "employees") {
+      baseDataset = queries.find(q => q.name === "Employee Data");
+    }
+    
+    if (!baseDataset) {
+      alert("Table not found! Available tables: students, teachers, employees");
+      return;
+    }
+    
+    console.log("Found base dataset:", baseDataset.name);
+    let data = [...baseDataset.data];
+    
+    // Step 4: Apply WHERE clause if present
+    let filteredData = [...data];
     const whereClauseMatch = query.match(/where\s+(.*?)(?:order by|group by|limit|$)/i);
     
     if (whereClauseMatch) {
       const whereClause = whereClauseMatch[1].trim();
+      console.log("WHERE clause:", whereClause);
       
       const conditions = whereClause.split(/\s+and\s+/i);
       
@@ -192,7 +203,7 @@ function App() {
       });
     }
 
-    // Apply ORDER BY if present
+    // Step 5: Apply ORDER BY if present
     const orderByMatch = query.match(/order by\s+(\w+)\s+(asc|desc)?/i);
     if (orderByMatch) {
       const [_, column, direction = 'asc'] = orderByMatch;
@@ -210,40 +221,14 @@ function App() {
       });
     }
 
-    // Apply LIMIT if present
+    // Step 6: Apply LIMIT if present
     const limitMatch = query.match(/limit\s+(\d+)/i);
     if (limitMatch) {
       const limit = parseInt(limitMatch[1]);
       filteredData = filteredData.slice(0, limit);
     }
 
-    // Extract columns for SELECT clause
-    let columns = [];
-    
-    if (query.match(/select\s+\*\s+from/i)) {
-      columns = Object.keys(data[0]);
-    } else {
-      const columnMatch = query.match(/select\s+(.*?)\s+from/i);
-      if (columnMatch) {
-        columns = columnMatch[1].split(",").map(col => col.trim());
-      } else {
-        columns = Object.keys(data[0]);
-      }
-    }
-
-    // Select only requested columns if specific columns were requested
-    if (!query.match(/select\s+\*\s+from/i)) {
-      filteredData = filteredData.map(row => {
-        const selectedRow = {};
-        columns.forEach(col => {
-          if (row.hasOwnProperty(col)) {
-            selectedRow[col] = row[col];
-          }
-        });
-        return selectedRow;
-      });
-    }
-
+    console.log("Final result count:", filteredData.length);
     setResult(filteredData);
   };
 
