@@ -6,46 +6,62 @@
   padding: 20px;
   width: 100%;
   transition: background-color 0.3s ease;
-  position: relative; // Add this to create positioning context
   // background-color: #f5f7fa; // Light background for the entire app
 }
 
 .app-container {
   text-align: center;
-  padding: 25px 25px 50px 25px; // Increased bottom padding for better scrolling
+  padding: 3rem; // Increased padding
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   width: 100%;
-  max-width: 800px; // Increased max width for better data display
+  max-width: 1400px; // Increased max width
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0 auto 20px auto;
-  position: fixed; // Fix the position
-  left: 50%; // Center horizontally
-  top: 50%; // Center vertically
-  transform: translate(-50%, -50%); // Center both horizontally and vertically
-  height: 95vh; // Increased from 85vh to 95vh for more height
-  max-height: 950px; // Increased from 850px to 950px
-  overflow-y: auto; // Add scrolling if content is too large
+  min-height: 900px; // Set a minimum height to prevent layout shifts
   
-  // Improve scrolling behavior
-  &:after {
-    content: "";
-    display: block;
-    height: 30px; // Add space at the bottom for better scrolling
-    width: 100%;
-  }
+  // For laptops and larger screens, position more to the right
+  transform: translateX(100%); // Increased to 100% for stronger right positioning
   
   // Remove transform from transition to prevent shifts during state changes
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   
+  // Using position relative to maintain layout context
+  position: relative;
+  
+  // Fix position of result section
+  .result-section {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    width: 100%;
+    position: relative;
+    
+    // Ensure the table container has a fixed height
+    .table-container {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    // Make table header sticky
+    .MuiTableHead-root {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+  }
+  
+  // Force position to remain stable when results appear
+  &.results-showing {
+    transform: translateX(100%) !important; // Same as normal state
+  }
+  
   // Additional class to lock position when running query
   &.position-locked {
-    left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important;
+    transform: translateX(100%) !important;
     transition: none !important; // Disable all transitions temporarily
   }
   
@@ -171,7 +187,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 20px; // Add padding at the bottom of results
   
   h6 {
     margin-bottom: 15px;
