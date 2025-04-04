@@ -1,0 +1,15 @@
+{
+  "short_name": "SQL Runner",
+  "name": "SQL Query Runner",
+  "icons": [
+    {
+      "src": "vite.svg",
+      "sizes": "100x100",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1976d2",
+  "background_color": "#ffffff"
+} 
