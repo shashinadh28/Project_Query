@@ -1,227 +1,249 @@
-import { useState, useMemo, useEffect } from "react";
-import { 
-  Container, 
-  Typography, 
-  Select, 
-  MenuItem, 
-  Button, 
-  Box, 
-  ThemeProvider, 
-  createTheme,
-  CssBaseline,
-  IconButton,
-  FormControl,
-  InputLabel
-} from "@mui/material";
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import "./App.scss";
-import { queries } from "./data";
-import QueryEditor from "./components/QueryEditor";
-import DataTable from "./components/DataTable";
+import { useState, useEffect } from 'react';
+import { ThemeProvider, createTheme, CssBaseline, Box, Typography, FormControl, MenuItem, Select, Switch, FormControlLabel, useMediaQuery } from '@mui/material';
+import QueryEditor from './components/QueryEditor';
+import DataTable from './components/DataTable';
+import { executeQuery, queryCategories } from './data';
+import './App.scss';
 
-// Group queries by category
-const studentQueries = queries.filter(q => q.name.includes("Student"));
-const teacherQueries = queries.filter(q => q.name.includes("Teacher"));
-const employeeQueries = queries.filter(q => q.name.includes("Employee"));
+const App = () => {
+  // State management
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
+  const [selectedCategory, setSelectedCategory] = useState('users');
+  const [availableQueries, setAvailableQueries] = useState([]);
+  const [selectedQueryId, setSelectedQueryId] = useState(null);
+  const [queryText, setQueryText] = useState('');
+  const [queryResults, setQueryResults] = useState([]);
+  const [isRunningQuery, setIsRunningQuery] = useState(false);
+  
+  // Responsive design hooks
+  const isMobile = useMediaQuery('(max-width:600px)');
+  const isTablet = useMediaQuery('(max-width:960px)');
 
-// Main category options
-const mainCategoryQueries = [
-  queries.find(q => q.name === "Student Data"),  // id: 1
-  queries.find(q => q.name === "Teacher Data"),  // id: 6
-  queries.find(q => q.name === "Employee Data"), // id: 11
-];
-
-// Define data categories for dropdown selection
-const DATA_CATEGORIES = {
-  "Student Data": studentQueries,
-  "Teacher Data": teacherQueries,
-  "Employee Data": employeeQueries
-};
-
-function App() {
-  const [selectedCategory, setSelectedCategory] = useState("Student Data");
-  const [selectedQuery, setSelectedQuery] = useState(mainCategoryQueries[0]);
-  const [queryText, setQueryText] = useState(selectedQuery.query);
-  const [result, setResult] = useState([]);
-  const [darkMode, setDarkMode] = useState(false);
-  const [lockPosition, setLockPosition] = useState(false);
-
-  // Create theme based on dark mode state
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: darkMode ? 'dark' : 'light',
-          primary: {
-            main: '#1976d2',
-          },
-          background: {
-            default: darkMode ? '#121212' : '#f5f7fa',
-            paper: darkMode ? '#1e1e1e' : '#fff',
+  // Theme configuration
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? 'dark' : 'light',
+      primary: {
+        main: '#1976d2',
+      },
+      secondary: {
+        main: '#f50057',
+      },
+      background: {
+        default: darkMode ? '#121212' : '#f5f5f5',
+        paper: darkMode ? '#1e1e1e' : '#ffffff',
+      },
+    },
+    typography: {
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontSize: 14,
+      h1: {
+        fontSize: isMobile ? '1.6rem' : '2.2rem',
+        fontWeight: 500,
+      },
+      h2: {
+        fontSize: isMobile ? '1.4rem' : '1.8rem',
+        fontWeight: 500,
+      },
+      body1: {
+        fontSize: isMobile ? '0.875rem' : '1rem',
+      },
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            transition: 'background-color 0.3s ease',
           },
         },
-      }),
-    [darkMode],
-  );
+      },
+    },
+  });
 
-  // Get relevant predefined queries based on selected category
-  const getQueriesByCategory = (category) => {
-    switch(category) {
-      case "Student Data":
-        return studentQueries;
-      case "Teacher Data":
-        return teacherQueries;
-      case "Employee Data":
-        return employeeQueries;
-      default:
-        return studentQueries;
+  // Update queries when category changes
+  useEffect(() => {
+    const category = queryCategories.find(cat => cat.id === selectedCategory);
+    if (category) {
+      setAvailableQueries(category.queries);
+      // Auto-select first query in category if none selected
+      if (!selectedQueryId || !category.queries.find(q => q.id === selectedQueryId)) {
+        setSelectedQueryId(category.queries[0]?.id || null);
+        setQueryText(category.queries[0]?.query || '');
+      }
+    } else {
+      setAvailableQueries([]);
     }
-  };
+  }, [selectedCategory, selectedQueryId]);
 
-  // Handle category change
+  // Store dark mode preference
+  useEffect(() => {
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  // Handle category selection change
   const handleCategoryChange = (event) => {
     const newCategory = event.target.value;
     setSelectedCategory(newCategory);
-    
-    // Reset selected query to the main query of this category
-    const mainQuery = mainCategoryQueries.find(q => q.name === newCategory);
-    if (mainQuery) {
-      setSelectedQuery(mainQuery);
-      setQueryText(mainQuery.query);
-      setResult([]);
-    }
   };
 
-  // Update selected query when query text changes from the QueryEditor
-  // This ensures the App knows which query is currently selected
-  const handleQueryTextChange = (newText) => {
-    setQueryText(newText);
+  // Handle query selection change
+  const handleQueryChange = (event) => {
+    const queryId = parseInt(event.target.value);
+    setSelectedQueryId(queryId);
     
-    // Try to find a query that matches this text
-    const matchingQuery = queries.find(q => q.query === newText);
-    if (matchingQuery) {
-      setSelectedQuery(matchingQuery);
-    }
-  };
-
-  const executeQuery = () => {
-    // Set lockPosition immediately to prevent layout shift
-    setLockPosition(true);
-    
-    if (!queryText.trim()) {
-      alert("Query cannot be empty!");
-      return;
-    }
-
-    console.log("Executing Query:", queryText);
-
-    // Normalize query: convert to lowercase and remove extra whitespace
-    const query = queryText.trim().toLowerCase();
-
-    // Find the corresponding dataset based on the query text
-    let dataset = queries.find(q => q.query.toLowerCase() === query);
-    
-    console.log("Found exact match for query:", dataset ? "yes" : "no");
-
-    if (!dataset) {
-      // If no exact match, try to find by table name
-      const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1(?:\s+(?:as\s+)?(\w+))?/i);
-      if (!tableMatch) {
-        alert("Invalid query! Cannot determine table name. Format: SELECT column1, column2 FROM table;");
-        return;
-      }
-      const tableName = tableMatch[2];
-      
-      // Find the base dataset for this table
-      dataset = queries.find(q => q.query.toLowerCase().includes(`from ${tableName}`));
-    }
-    
-    if (!dataset) {
-      alert("Query not found in predefined queries!");
-      return;
-    }
-
-    console.log("Dataset found:", dataset.name);
-
-    // Set the result
-    setResult(dataset.data);
-  };
-
-  // Handle query change from the QueryEditor component
-  const handleSelectedQueryChange = (queryId) => {
-    const selectedQuery = queries.find(q => q.id === queryId);
+    const selectedQuery = availableQueries.find(q => q.id === queryId);
     if (selectedQuery) {
-      setSelectedQuery(selectedQuery);
+      setQueryText(selectedQuery.query);
     }
+  };
+
+  // Handle query text changes from editor
+  const handleQueryTextChange = (newValue) => {
+    setQueryText(newValue);
+  };
+
+  // Execute the current query
+  const runQuery = () => {
+    if (!queryText.trim()) return;
+    
+    setIsRunningQuery(true);
+    
+    // Simulate network delay for realistic experience
+    setTimeout(() => {
+      try {
+        const results = executeQuery(queryText);
+        setQueryResults(results);
+      } catch (error) {
+        console.error('Query execution error:', error);
+        // In a real app, you would handle this better
+        setQueryResults([]);
+      } finally {
+        setIsRunningQuery(false);
+      }
+    }, 600);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box className="app-wrapper" sx={{ bgcolor: 'background.default' }}>
-        <Container 
-          maxWidth="sm" 
-          className={`app-container ${result.length > 0 ? 'results-showing' : ''} ${lockPosition ? 'position-locked' : ''}`} 
-          sx={{ bgcolor: 'background.paper' }}
-        >
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <Typography variant="h3" align="center" className="title">
+      <Box 
+        className="app-container" 
+        sx={{ 
+          bgcolor: 'background.default',
+          minHeight: '100vh',
+          p: isMobile ? 2 : 3,
+          transition: 'all 0.3s ease'
+        }}
+      >
+        <Box className="app-header" sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography 
+              variant="h1" 
+              color="primary" 
+              sx={{ 
+                fontWeight: 600,
+                fontSize: isMobile ? '1.5rem' : isTablet ? '1.8rem' : '2rem',
+              }}
+            >
               SQL Query Runner
             </Typography>
-            <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
-              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-          </Box>
-
-          <Box className="input-section">
-            <Typography variant="h6">Select Data Category:</Typography>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <Select
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                variant="outlined"
-              >
-                {Object.keys(DATA_CATEGORIES).map((category) => (
-                  <MenuItem key={category} value={category}>
-                    {category}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-
-          <Box className="query-section">
-            <Typography variant="h6">Query:</Typography>
-            <QueryEditor 
-              queryText={queryText} 
-              setQueryText={handleQueryTextChange}
-              setTableData={setResult}
-              selectedQueryId={selectedQuery.id}
-              relevantQueries={getQueriesByCategory(selectedCategory)}
-              onQuerySelect={handleSelectedQueryChange}
+            
+            <FormControlLabel
+              control={
+                <Switch 
+                  checked={darkMode} 
+                  onChange={() => setDarkMode(!darkMode)} 
+                  color="primary" 
+                />
+              }
+              label={<Typography variant="body2">{darkMode ? 'Dark Mode' : 'Light Mode'}</Typography>}
             />
           </Box>
-
-          <Box className="button-container">
-            <Button variant="contained" color="primary" onClick={executeQuery}>
-              RUN QUERY
-            </Button>
+          
+          <Typography 
+            variant="body1" 
+            color="text.secondary" 
+            sx={{ 
+              mb: 3, 
+              maxWidth: '800px',
+              fontSize: isMobile ? '0.875rem' : '1rem',
+            }}
+          >
+            Run SQL queries on sample datasets including users, products, orders, and employee data.
+          </Typography>
+          
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: isTablet ? 'column' : 'row',
+              gap: 2, 
+              mb: 2,
+              alignItems: isTablet ? 'stretch' : 'center',
+            }}
+          >
+            <Box sx={{ flex: 1, minWidth: isTablet ? 'auto' : 250 }}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Select Data Category:
+              </Typography>
+              <FormControl fullWidth size="small">
+                <Select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                  sx={{ 
+                    borderRadius: '4px',
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  {queryCategories.map((category) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+            
+            <Box sx={{ flex: 1, minWidth: isTablet ? 'auto' : 250 }}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+                Select Query:
+              </Typography>
+              <FormControl fullWidth size="small">
+                <Select
+                  value={selectedQueryId || ''}
+                  onChange={handleQueryChange}
+                  sx={{ 
+                    borderRadius: '4px',
+                    bgcolor: 'background.paper',
+                  }}
+                >
+                  {availableQueries.map((query) => (
+                    <MenuItem key={query.id} value={query.id}>
+                      {query.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
-
-          {/* Result section wrapper with fixed minimum height to prevent layout shifts */}
-          <Box sx={{ width: '100%', minHeight: '400px' }}>
-            {result.length > 0 && (
-              <Box className="result-section">
-                <Typography variant="h6">Result:</Typography>
-                <DataTable tableData={result} />
-              </Box>
-            )}
-          </Box>
-        </Container>
+        </Box>
+        
+        <Box className="app-content">
+          <QueryEditor 
+            queryText={queryText} 
+            onQueryTextChange={handleQueryTextChange} 
+            onRunQuery={runQuery}
+            isRunning={isRunningQuery}
+            darkMode={darkMode}
+          />
+          
+          <DataTable tableData={queryResults} />
+        </Box>
       </Box>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

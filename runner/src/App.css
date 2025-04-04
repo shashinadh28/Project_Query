@@ -40,18 +40,3 @@
 .read-the-docs {
   color: #888;
 }
-
-
-/*  */
-.App {
-  text-align: center;
-}
-
-.query-editor textarea {
-  width: 80%;
-  font-family: monospace;
-}
-
-.data-table {
-  margin-top: 20px;
-}

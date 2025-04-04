@@ -1,173 +1,164 @@
 import { useState, useEffect } from 'react';
-import { TextField, Paper, Typography, Box, FormControl, InputLabel, Select, MenuItem, useTheme } from '@mui/material';
-import { queries } from '../data'; // Import the queries from data.js
+import { 
+  Box, 
+  Paper, 
+  Typography, 
+  Button, 
+  CircularProgress,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
 
+/**
+ * SQL Query Editor component
+ * Provides a text area for SQL input and execution controls
+ */
 const QueryEditor = ({ 
-  queryText = '', // Add default value
-  setQueryText, 
-  setTableData, 
-  selectedQueryId, 
-  relevantQueries = [], 
-  onQuerySelect 
+  queryText, 
+  onQueryTextChange, 
+  onRunQuery, 
+  isRunning,
+  darkMode 
 }) => {
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const [selectedPredefQueryId, setSelectedPredefQueryId] = useState(null);
+  const [editorHeight, setEditorHeight] = useState(200);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   
-  // Reset predefined query selection when relevant queries change
+  // Adjust editor height based on window size
   useEffect(() => {
-    setSelectedPredefQueryId(null);
-  }, [relevantQueries]);
-
-  // Sync with parent's selected query ID
-  useEffect(() => {
-    if (selectedQueryId) {
-      setSelectedPredefQueryId(selectedQueryId);
-    }
-  }, [selectedQueryId]);
-
-  // Handle query change in text editor
-  const handleChange = (e) => {
-    setQueryText(e.target.value);
-    setCursorPosition(e.target.selectionStart);
-  };
-
-  // Handle predefined query selection
-  const handleQuerySelection = (e) => {
-    const queryId = parseInt(e.target.value);
-    if (!queryId) {
-      setSelectedPredefQueryId(null);
-      return;
-    }
+    const updateHeight = () => {
+      if (window.innerHeight < 600) {
+        setEditorHeight(150);
+      } else if (window.innerHeight < 900) {
+        setEditorHeight(200);
+      } else {
+        setEditorHeight(250);
+      }
+    };
     
-    const selectedQuery = queries.find(q => q.id === queryId);
-    if (selectedQuery) {
-      setSelectedPredefQueryId(queryId);
-      setQueryText(selectedQuery.query); // Update text editor with the query
-      
-      // Notify parent component about the selection
-      if (onQuerySelect) {
-        onQuerySelect(queryId);
-      }
-      
-      if (setTableData) {
-        setTableData([]); // Clear previous results
-      }
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
+
+  // Handle keyboard shortcuts (Ctrl+Enter to run query)
+  const handleKeyDown = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      onRunQuery();
     }
   };
-
-  // Generate line numbers dynamically
-  const lineNumbers = (queryText || '').split('\n').map((_, i) => i + 1).join('\n');
-
-  // Get table name from the current query
-  const getTableName = () => {
-    if (!queryText) return 'table';
-    const match = queryText.match(/from\s+(['"`]?)(\w+)\1/i);
-    return match ? match[2] : 'table';
-  };
-
-  // Determine colors based on theme
-  const editorBgColor = theme.palette.mode === 'dark' ? '#2d2d2d' : '#f5f5f5';
-  const lineNumberColor = theme.palette.mode === 'dark' ? '#888' : '#666';
-  const textColor = theme.palette.mode === 'dark' ? '#fff' : 'inherit';
-  const borderColor = theme.palette.mode === 'dark' ? '#555' : '#ccc';
 
   return (
-    <Box className="query-editor-container" sx={{ width: '100%' }}>
-      <Typography variant="subtitle1" sx={{ mb: 1, textAlign: 'left' }}>
-        Write your SQL query below:
-      </Typography>
-
-      {/* Dropdown to select predefined queries - without label */}
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <Select 
-          value={selectedPredefQueryId || ''}
-          onChange={handleQuerySelection}
-          displayEmpty
-          placeholder="Select a query"
-        >
-          <MenuItem value="">-- Select a Query --</MenuItem>
-          {relevantQueries.map(q => (
-            <MenuItem key={q.id} value={q.id}>
-              {q.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {/* Query Editor */}
-      <Paper 
-        elevation={3} 
+    <Paper 
+      elevation={0}
+      sx={{ 
+        width: '100%', 
+        mb: 2,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: '4px',
+        overflow: 'hidden'
+      }}
+    >
+      <Box 
         sx={{ 
           p: 1, 
           display: 'flex', 
-          position: 'relative', 
-          backgroundColor: editorBgColor,
-          transition: 'background-color 0.3s ease'
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.primary.main,
+          color: '#fff'
         }}
       >
-        {/* Line Numbers */}
-        <Box 
+        <Typography 
+          variant={isMobile ? "caption" : "body2"} 
+          fontWeight={500}
+        >
+          SQL QUERY EDITOR
+        </Typography>
+        
+        <Typography 
+          variant="caption" 
+          component="div"
           sx={{ 
-            pr: 1, 
-            borderRight: `1px solid ${borderColor}`, 
-            color: lineNumberColor,
             fontFamily: 'monospace',
-            fontSize: '14px',
-            lineHeight: '1.5',
-            textAlign: 'right',
-            userSelect: 'none',
-            paddingRight: '8px',
-            marginRight: '8px',
-            transition: 'color 0.3s ease, border-color 0.3s ease'
+            opacity: 0.8 
           }}
         >
-          {lineNumbers}
-        </Box>
-        
-        {/* Text Field for Query Input */}
-        <TextField
-          value={queryText || ''}
-          onChange={handleChange}
-          onSelect={(e) => setCursorPosition(e.target.selectionStart)}
-          multiline
-          fullWidth
-          variant="standard"
-          InputProps={{
-            disableUnderline: true,
-            style: {
-              fontFamily: 'monospace',
-              fontSize: '14px',
-              lineHeight: '1.5',
-              color: textColor
-            }
-          }}
-          placeholder="SELECT * FROM table WHERE condition;"
-          sx={{ 
-            backgroundColor: 'transparent',
-            '& .MuiInputBase-root': { p: 0 },
-            '& .MuiInputBase-input': { 
-              color: textColor,
-              transition: 'color 0.3s ease' 
-            }
-          }}
-        />
-      </Paper>
-
-      {/* Display Cursor Position & Line Count */}
-      <Typography variant="caption" sx={{ mt: 1, display: 'block', textAlign: 'right', color: '#666' }}>
-        Position: {cursorPosition} | Lines: {(queryText || '').split('\n').length}
-      </Typography>
-
-      {/* Example Queries and Tips */}
-      <Box sx={{ mt: 2, textAlign: 'left' }}>
-        <Typography variant="caption" sx={{ display: 'block', color: '#666', fontStyle: 'italic' }}>
-          Examples: 
-          <br />• SELECT * FROM {getTableName()}
-          <br />• SELECT name, email FROM {getTableName()} WHERE status = 'Active'
+          Ctrl+Enter to Run
         </Typography>
       </Box>
-    </Box>
+      
+      <Box sx={{ position: 'relative' }}>
+        <textarea
+          value={queryText}
+          onChange={(e) => onQueryTextChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Enter SQL query here..."
+          style={{
+            width: '100%',
+            height: `${editorHeight}px`,
+            padding: '12px',
+            fontFamily: 'monospace',
+            fontSize: isMobile ? '13px' : '14px',
+            lineHeight: '1.5',
+            resize: 'none',
+            border: 'none',
+            outline: 'none',
+            backgroundColor: darkMode ? '#1e1e1e' : '#f8f9fa',
+            color: darkMode ? '#e6e6e6' : '#333',
+            caretColor: theme.palette.primary.main,
+          }}
+        />
+        
+        {isRunning && (
+          <Box 
+            sx={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              right: 0, 
+              bottom: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              zIndex: 1 
+            }}
+          >
+            <CircularProgress size={32} thickness={4} />
+          </Box>
+        )}
+      </Box>
+      
+      <Box 
+        sx={{ 
+          p: 1.5,
+          display: 'flex', 
+          justifyContent: 'flex-end',
+          borderTop: `1px solid ${theme.palette.divider}`,
+          backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onRunQuery}
+          disabled={isRunning || !queryText.trim()}
+          startIcon={isRunning ? <CircularProgress size={16} color="inherit" /> : null}
+          size={isMobile ? "small" : "medium"}
+          sx={{
+            fontWeight: 500,
+            minWidth: isMobile ? '80px' : '120px',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          {isRunning ? 'Running...' : 'Run Query'}
+        </Button>
+      </Box>
+    </Paper>
   );
 };
 

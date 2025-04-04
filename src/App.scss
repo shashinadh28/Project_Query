@@ -1,262 +1,242 @@
-.app-wrapper {
-  display: flex;
-  justify-content: flex-end; // Keeps content aligned to the right
-  align-items: center; // Centers content vertically
-  min-height: 100vh;
-  padding: 20px;
+/**
+ * SQL Query Runner - Main Application Styles
+ */
+
+// Variables for consistent styling
+:root {
+  --primary-color: #1976d2;
+  --primary-dark: #1565c0;
+  --secondary-color: #f50057;
+  --text-color: #333;
+  --text-light: #666;
+  --background-light: #f5f5f5;
+  --background-dark: #121212;
+  --card-light: #ffffff;
+  --card-dark: #1e1e1e;
+  --border-color-light: rgba(0, 0, 0, 0.12);
+  --border-color-dark: rgba(255, 255, 255, 0.12);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --border-radius: 4px;
+  --spacing-unit: 1rem;
+  --spacing-double: 2rem;
+  --spacing-half: 0.5rem;
+  --spacing-quarter: 0.25rem;
+  --transition-speed: 0.3s;
+}
+
+// Base styles
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-speed) ease;
+}
+
+// Main container styles
+.app-container {
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-unit);
+  box-sizing: border-box;
+  
+  // Header section
+  .app-header {
+    margin-bottom: var(--spacing-double);
+    
+    h1 {
+      margin-top: 0;
+      margin-bottom: var(--spacing-unit);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+  }
+  
+  // Main content area
+  .app-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-unit);
+    
+    // Query editor specific styles
+    textarea {
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+      
+      &::placeholder {
+        color: var(--text-light);
+        opacity: 0.7;
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 960px) {
+  .app-container {
+    padding: var(--spacing-half);
+    
+    .app-header {
+      margin-bottom: var(--spacing-unit);
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .app-container {
+    padding: var(--spacing-half);
+    
+    .app-header {
+      margin-bottom: var(--spacing-unit);
+    }
+    
+    .app-content {
+      gap: var(--spacing-half);
+    }
+  }
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
+// Dark mode scrollbar adjustments
+.MuiThemeProvider-root[data-theme="dark"] {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Utility classes
+.text-overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
   transition: background-color 0.3s ease;
-  // background-color: #f5f7fa; // Light background for the entire app
+  background-color: var(--background-light);
+  
+  &.dark {
+    background-color: var(--background-dark);
+  }
 }
 
 .app-container {
-  text-align: center;
-  padding: 25px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   width: 100%;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 0 0 auto; // No right margin to push all the way to the edge
-  position: relative;
-  min-height: 800px;
-  
-  // Extreme right positioning - force new deployment
-  transform: translateX(500px);
-  
-  // Only transition colors, not position
+  max-width: 700px;
+  padding: 2rem;
+  background-color: var(--card-light);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 20px var(--shadow-color);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   
-  // Keep transform consistent when showing results
+  &.dark {
+    background-color: var(--card-dark);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+  
   &.results-showing {
-    transform: translateX(500px) !important;
+    margin-bottom: 2rem;
   }
   
-  // Keep transform consistent during query execution
   &.position-locked {
-    transform: translateX(500px) !important;
-    transition: none !important;
-  }
-  
-  &.dark-mode {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    
-    // Dark mode styling for tables
-    .table-container {
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-    
-    .result-table {
-      .MuiTableHead-root {
-        background-color: #333;
-        
-        .MuiTableCell-head {
-          background-color: #0d47a1; // Darker blue for headers
-        }
-      }
-      
-      .MuiTableBody-root {
-        background-color: #2c2c2c;
-        
-        .MuiTableRow-root {
-          &:nth-of-type(odd) {
-            background-color: #333;
-          }
-          
-          &:hover {
-            background-color: #3a3a3a;
-          }
-          
-          .MuiTableCell-body {
-            color: #e0e0e0;
-            border-bottom: 1px solid #444;
-          }
-        }
-      }
-    }
-    
-    // Dark mode styling for pagination
-    .pagination-controls {
-      .page-indicator {
-        background-color: #333;
-        color: #e0e0e0;
-      }
-    }
-  }
-}
-
-.title {
-  color: #1976d2;
-  font-weight: 700;
-  margin-bottom: 25px;
-  font-size: 2.2rem;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-  flex: 1;
-}
-
-.input-section,
-.query-section,
-.button-container,
-.result-section {
-  margin-top: 25px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-// Query editor specific styling
-.query-section {
-  textarea {
-    font-family: "Courier New", Courier, monospace;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    font-size: 14px;
-    &:focus {
-      outline: none;
-      border-color: #1976d2;
-      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-    }
-  }
-}
-
-.query-editor-container {
-  width: 100%;
-  .MuiPaper-root {
-    border-radius: 8px;
-    overflow: hidden;
-  }
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  margin: 30px 0;
-  
-  button {
-    padding: 10px 25px;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    &:active {
-      transform: translateY(1px);
-    }
-  }
-}
-
-// Result section styling
-.result-section {
-  max-width: 100%;
-  overflow-x: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  
-  h6 {
-    margin-bottom: 15px;
-    font-weight: 600;
-    align-self: flex-end;
-  }
-}
-
-// Table styling
-.result-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.table-container {
-  margin-bottom: 25px;
-  width: 90%;
-  display: flex;
-  justify-content: flex-end;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.result-table {
-  margin: 0 auto !important;
-  width: 100%;
-  
-  .MuiTableHead-root {
-    background-color: #f5f5f5;
-    
-    .MuiTableCell-head {
-      font-weight: 700;
-      background-color: #1976d2;
-      color: white;
-    }
-  }
-  
-  .MuiTableBody-root {
-    .MuiTableRow-root {
-      &:hover {
-        background-color: rgba(25, 118, 210, 0.04);
-      }
-    }
-  }
-}
-
-// Fix MUI TableCell alignment
-:global(.MuiTableCell-root) {
-  text-align: center !important;
-}
-
-// Pagination controls styling
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-  gap: 15px;
-  width: 100%;
-  
-  button {
-    min-width: 80px;
-  }
-}
-
-.page-indicator {
-  margin: 0 10px;
-  padding: 5px 15px;
-  background-color: #f5f5f5;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .app-container {
-    padding: 15px;
+    margin-bottom: 0;
   }
   
   .title {
-    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    position: relative;
+    text-align: left;
+    font-weight: 600;
+    font-size: 2.5rem;
+    
+    @media (max-width: 600px) {
+      font-size: 2rem;
+    }
   }
   
-  .pagination-controls {
-    flex-wrap: wrap;
-    gap: 10px;
+  .input-section {
+    margin-bottom: 2rem;
+  }
+  
+  .query-section {
+    margin-bottom: 2rem;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 1.5rem 0;
+  }
+  
+  .result-section {
+    padding: 1.5rem 0;
+    max-height: 600px;
+    overflow-y: auto;
     
-    button {
-      min-width: 70px;
-      font-size: 0.8rem;
-      padding: 6px 12px;
+    h6 {
+      margin-bottom: 1rem;
     }
   }
 }
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .app-container {
+    padding: 1rem;
+  }
+  
+  .app-wrapper {
+    padding: 0.5rem;
+  }
+} 
