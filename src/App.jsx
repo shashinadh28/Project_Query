@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Container, 
   Typography, 
@@ -27,9 +27,9 @@ const employeeQueries = queries.filter(q => q.name.includes("Employee"));
 
 // Main category options
 const mainCategoryQueries = [
-  queries.find(q => q.name === "Student Data"),
-  queries.find(q => q.name === "Teacher Data"),
-  queries.find(q => q.name === "Employee Data"),
+  queries.find(q => q.name === "Student Data"),  // id: 1
+  queries.find(q => q.name === "Teacher Data"),  // id: 6
+  queries.find(q => q.name === "Employee Data"), // id: 11
 ];
 
 // Define data categories for dropdown selection
@@ -67,7 +67,16 @@ function App() {
 
   // Get relevant predefined queries based on selected category
   const getQueriesByCategory = (category) => {
-    return DATA_CATEGORIES[category] || studentQueries;
+    switch(category) {
+      case "Student Data":
+        return studentQueries;
+      case "Teacher Data":
+        return teacherQueries;
+      case "Employee Data":
+        return employeeQueries;
+      default:
+        return studentQueries;
+    }
   };
 
   // Handle category change
@@ -75,6 +84,7 @@ function App() {
     const newCategory = event.target.value;
     setSelectedCategory(newCategory);
     
+    // Reset selected query to the main query of this category
     const mainQuery = mainCategoryQueries.find(q => q.name === newCategory);
     if (mainQuery) {
       setSelectedQuery(mainQuery);
@@ -83,18 +93,20 @@ function App() {
     }
   };
 
-  // Handle query text changes
+  // Update selected query when query text changes from the QueryEditor
+  // This ensures the App knows which query is currently selected
   const handleQueryTextChange = (newText) => {
     setQueryText(newText);
     
+    // Try to find a query that matches this text
     const matchingQuery = queries.find(q => q.query === newText);
     if (matchingQuery) {
       setSelectedQuery(matchingQuery);
     }
   };
 
-  // Execute SQL query
   const executeQuery = () => {
+    // Set lockPosition immediately to prevent layout shift
     setLockPosition(true);
     
     if (!queryText.trim()) {
@@ -102,142 +114,48 @@ function App() {
       return;
     }
 
+    console.log("Executing query:", queryText);
+
+    // Normalize query: convert to lowercase and remove extra whitespace
     const query = queryText.trim().toLowerCase();
-    console.log("Executing query:", query);
+
+    // Find the corresponding dataset based on the query text
+    let dataset = queries.find(q => q.query.toLowerCase() === query);
     
-    // Step 1: Try to find an exact matching predefined query
-    let matchedQuery = queries.find(q => q.query.toLowerCase() === query);
-    
-    if (matchedQuery) {
-      console.log("Found exact match for query");
-      setResult(matchedQuery.data);
-      return;
-    }
-    
-    // Step 2: If no exact match, try to identify the table name
-    const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1/i);
-    if (!tableMatch) {
-      alert("Invalid query! Cannot determine table name.");
-      return;
-    }
-    
-    const tableName = tableMatch[2].toLowerCase();
-    console.log("Table name extracted:", tableName);
-    
-    // Step 3: Find base dataset for the table
-    let baseDataset;
-    if (tableName === "students") {
-      baseDataset = queries.find(q => q.name === "Student Data");
-    } else if (tableName === "teachers") {
-      baseDataset = queries.find(q => q.name === "Teacher Data");
-    } else if (tableName === "employees") {
-      baseDataset = queries.find(q => q.name === "Employee Data");
-    }
-    
-    if (!baseDataset) {
-      alert("Table not found! Available tables: students, teachers, employees");
-      return;
-    }
-    
-    console.log("Found base dataset:", baseDataset.name);
-    let data = [...baseDataset.data];
-    
-    // Step 4: Apply WHERE clause if present
-    let filteredData = [...data];
-    const whereClauseMatch = query.match(/where\s+(.*?)(?:order by|group by|limit|$)/i);
-    
-    if (whereClauseMatch) {
-      const whereClause = whereClauseMatch[1].trim();
-      console.log("WHERE clause:", whereClause);
+    console.log("Found exact match for query:", dataset ? "yes" : "no");
+
+    if (!dataset) {
+      // If no exact match, try to find by table name
+      const tableMatch = query.match(/from\s+(['"`]?)(\w+)\1(?:\s+(?:as\s+)?(\w+))?/i);
+      if (!tableMatch) {
+        alert("Invalid query! Cannot determine table name. Format: SELECT column1, column2 FROM table;");
+        return;
+      }
+      const tableName = tableMatch[2];
       
-      const conditions = whereClause.split(/\s+and\s+/i);
-      
-      conditions.forEach(condition => {
-        const conditionMatch = condition.match(/(\w+)\s*([=<>!]+|like|in)\s*(['"]?)([^'"]+)\3/i);
-        
-        if (conditionMatch) {
-          const [_, column, operator, _quote, valueStr] = conditionMatch;
-          let value = valueStr.trim();
-          
-          if (!isNaN(value) && operator !== "like") {
-            value = Number(value);
-          }
-          
-          switch(operator.toLowerCase()) {
-            case "=":
-              filteredData = filteredData.filter(row => {
-                if (typeof value === 'number') {
-                  return Number(row[column]) === value;
-                }
-                return String(row[column]).toLowerCase() === String(value).toLowerCase();
-              });
-              break;
-            case ">":
-              filteredData = filteredData.filter(row => Number(row[column]) > value);
-              break;
-            case "<":
-              filteredData = filteredData.filter(row => Number(row[column]) < value);
-              break;
-            case ">=":
-              filteredData = filteredData.filter(row => Number(row[column]) >= value);
-              break;
-            case "<=":
-              filteredData = filteredData.filter(row => Number(row[column]) <= value);
-              break;
-            case "<>":
-            case "!=":
-              filteredData = filteredData.filter(row => {
-                if (typeof value === 'number') {
-                  return Number(row[column]) !== value;
-                }
-                return String(row[column]).toLowerCase() !== String(value).toLowerCase();
-              });
-              break;
-            case "like":
-              const pattern = value.replace(/%/g, '.*');
-              const regex = new RegExp(pattern, 'i');
-              filteredData = filteredData.filter(row => regex.test(String(row[column])));
-              break;
-          }
-        }
+      // Find the base dataset for this table
+      dataset = queries.find(q => {
+        const baseQuery = q.query.toLowerCase();
+        return baseQuery.includes(`from ${tableName}`) && baseQuery.startsWith("select * from");
       });
     }
-
-    // Step 5: Apply ORDER BY if present
-    const orderByMatch = query.match(/order by\s+(\w+)\s+(asc|desc)?/i);
-    if (orderByMatch) {
-      const [_, column, direction = 'asc'] = orderByMatch;
-      filteredData.sort((a, b) => {
-        const aVal = a[column];
-        const bVal = b[column];
-        
-        if (typeof aVal === 'number') {
-          return direction.toLowerCase() === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-        
-        return direction.toLowerCase() === 'asc' 
-          ? String(aVal).localeCompare(String(bVal))
-          : String(bVal).localeCompare(String(aVal));
-      });
+    
+    if (!dataset) {
+      alert("Query not found in predefined queries!");
+      return;
     }
 
-    // Step 6: Apply LIMIT if present
-    const limitMatch = query.match(/limit\s+(\d+)/i);
-    if (limitMatch) {
-      const limit = parseInt(limitMatch[1]);
-      filteredData = filteredData.slice(0, limit);
-    }
+    console.log("Dataset found:", dataset.name);
 
-    console.log("Final result count:", filteredData.length);
-    setResult(filteredData);
+    // Set the result
+    setResult(dataset.data);
   };
 
-  // Handle selected query change
+  // Handle query change from the QueryEditor component
   const handleSelectedQueryChange = (queryId) => {
-    const newQuery = queries.find(q => q.id === queryId);
-    if (newQuery) {
-      setSelectedQuery(newQuery);
-      setQueryText(newQuery.query);
+    const selectedQuery = queries.find(q => q.id === queryId);
+    if (selectedQuery) {
+      setSelectedQuery(selectedQuery);
     }
   };
 
@@ -259,41 +177,32 @@ function App() {
             </IconButton>
           </Box>
 
-          <FormControl fullWidth sx={{ mt: 4 }}>
-            <InputLabel>Select Category</InputLabel>
-            <Select
-              value={selectedCategory}
-              onChange={handleCategoryChange}
-              label="Select Category"
-            >
-              {mainCategoryQueries.map((item) => (
-                <MenuItem key={item.id} value={item.name}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box className="input-section">
+            <Typography variant="h6">Select Data Category:</Typography>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Select
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                variant="outlined"
+              >
+                {Object.keys(DATA_CATEGORIES).map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {category}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
 
-          <FormControl fullWidth sx={{ mt: 3 }}>
-            <InputLabel>Select Query</InputLabel>
-            <Select
-              value={selectedQuery ? selectedQuery.id : ''}
-              onChange={(e) => handleSelectedQueryChange(e.target.value)}
-              label="Select Query"
-            >
-              {getQueriesByCategory(selectedCategory).map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <Box sx={{ mt: 3, width: '100%' }}>
-            <QueryEditor
-              value={queryText}
-              onChange={handleQueryTextChange}
-              darkMode={darkMode}
+          <Box className="query-section">
+            <Typography variant="h6">Query:</Typography>
+            <QueryEditor 
+              queryText={queryText} 
+              setQueryText={handleQueryTextChange}
+              setTableData={setResult}
+              selectedQueryId={selectedQuery.id}
+              relevantQueries={getQueriesByCategory(selectedCategory)}
+              onQuerySelect={handleSelectedQueryChange}
             />
           </Box>
 
@@ -303,11 +212,11 @@ function App() {
             </Button>
           </Box>
 
-          {/* Result section wrapper with consistent height to prevent layout shifts */}
-          <Box sx={{ width: '100%', minHeight: '400px', display: 'flex', justifyContent: 'flex-end' }}>
+          {/* Result section wrapper with fixed minimum height to prevent layout shifts */}
+          <Box sx={{ width: '100%', minHeight: '400px' }}>
             {result.length > 0 && (
-              <Box className="result-section" sx={{ width: '100%' }}>
-                <Typography variant="h6" align="right">Result:</Typography>
+              <Box className="result-section">
+                <Typography variant="h6">Result:</Typography>
                 <DataTable tableData={result} />
               </Box>
             )}
