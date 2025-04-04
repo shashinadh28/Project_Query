@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { 
   Container, 
   Typography, 
@@ -46,13 +46,6 @@ function App() {
   const [result, setResult] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [lockPosition, setLockPosition] = useState(false);
-
-  // Lock position when results change to prevent shifting
-  useEffect(() => {
-    if (result.length > 0) {
-      setLockPosition(true);
-    }
-  }, [result]);
 
   // Create theme based on dark mode state
   const theme = useMemo(
