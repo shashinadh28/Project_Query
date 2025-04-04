@@ -13,7 +13,7 @@ import {
 const SearchIcon = () => <span>🔍</span>;
 const SortIcon = () => <span>↕️</span>;
 
-const DataTable = ({ tableData, darkMode }) => {
+const DataTable = ({ data, darkMode }) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
   
@@ -23,20 +23,20 @@ const DataTable = ({ tableData, darkMode }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   // Get columns from the first data row
-  const columns = tableData && tableData.length > 0 ? Object.keys(tableData[0]) : [];
+  const columns = data && data.length > 0 ? Object.keys(data[0]) : [];
   
   // Filter data based on search query
   const filteredData = useMemo(() => {
-    if (!tableData || tableData.length === 0 || !searchQuery) {
-      return tableData;
+    if (!data || data.length === 0 || !searchQuery) {
+      return data;
     }
     
-    return tableData.filter(row => {
+    return data.filter(row => {
       return Object.values(row).some(value => 
         String(value).toLowerCase().includes(searchQuery.toLowerCase())
       );
     });
-  }, [tableData, searchQuery]);
+  }, [data, searchQuery]);
   
   // Sort data based on sort config
   const sortedData = useMemo(() => {
@@ -86,7 +86,7 @@ const DataTable = ({ tableData, darkMode }) => {
 
   // Export data to CSV
   const exportToCSV = () => {
-    if (tableData.length === 0) return;
+    if (data.length === 0) return;
     
     // Create CSV content
     const csvHeader = columns.join(',');
@@ -113,7 +113,7 @@ const DataTable = ({ tableData, darkMode }) => {
   };
   
   // No data case
-  if (!tableData || tableData.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Typography variant="body1" style={{ textAlign: 'center', padding: '20px' }}>
         No results found
@@ -178,7 +178,7 @@ const DataTable = ({ tableData, darkMode }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="body2" sx={{ textAlign: 'left' }}>
           Showing {paginatedData.length} of {sortedData.length} results
-          {searchQuery && ` (filtered from ${tableData.length} total)`}
+          {searchQuery && ` (filtered from ${data.length} total)`}
         </Typography>
         
         <Button 
@@ -257,51 +257,44 @@ const DataTable = ({ tableData, darkMode }) => {
           </TableBody>
         </Table>
       </TableContainer>
-
+      
       {/* Pagination */}
-      <Box className="pagination-controls">
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => setCurrentPage(1)}
-          disabled={currentPage === 1}
-        >
-          First
-        </Button>
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <Typography 
-          variant="body1" 
-          className="page-indicator"
-          sx={{ 
-            backgroundColor: isDarkMode ? '#333' : '#f5f5f5',
-            color: isDarkMode ? '#e0e0e0' : 'inherit'
-          }}
-        >
-          Page {currentPage} of {totalPages || 1}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
+        <Box>
+          <Button 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(1)}
+            sx={{ mr: 1 }}
+          >
+            First
+          </Button>
+          <Button 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+        </Box>
+        
+        <Typography>
+          Page {currentPage} of {Math.max(1, totalPages)}
         </Typography>
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => setCurrentPage((prev) => prev < totalPages ? prev + 1 : prev)}
-          disabled={currentPage >= totalPages}
-        >
-          Next
-        </Button>
-        <Button 
-          variant="contained" 
-          color="primary"
-          onClick={() => setCurrentPage(totalPages)}
-          disabled={currentPage >= totalPages}
-        >
-          Last
-        </Button>
+        
+        <Box>
+          <Button 
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            sx={{ mr: 1 }}
+          >
+            Next
+          </Button>
+          <Button 
+            disabled={currentPage === totalPages || totalPages === 0}
+            onClick={() => setCurrentPage(totalPages)}
+          >
+            Last
+          </Button>
+        </Box>
       </Box>
     </div>
   );

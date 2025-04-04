@@ -59,6 +59,11 @@ const generateLargeDataset = (length, type) => {
   });
 };
 
+// Export datasets for direct usage
+export const students = generateLargeDataset(500, "students");
+export const teachers = generateLargeDataset(200, "teachers");
+export const employees = generateLargeDataset(300, "employees");
+
 // Predefined queries with sample data
 export const queries = [
   // Student queries
@@ -66,39 +71,19 @@ export const queries = [
     id: 1,
     name: "Student Data",
     query: "SELECT * FROM students;",
-    data: generateLargeDataset(500, "students"),
+    sql: "SELECT * FROM students;"
   },
   {
     id: 2,
     name: "High GPA Students",
     query: "SELECT roll_number, name, grade, major, gpa FROM students WHERE gpa > 8.5;",
-    data: [
-      { roll_number: "STU1001", name: "Student 1", grade: 10, major: "Computer Science", gpa: "9.5" },
-      { roll_number: "STU1002", name: "Student 2", grade: 11, major: "Mathematics", gpa: "8.7" },
-      { roll_number: "STU1003", name: "Student 3", grade: 12, major: "Physics", gpa: "10.0" },
-      { roll_number: "STU1004", name: "Student 4", grade: 9, major: "Chemistry", gpa: "8.6" },
-      { roll_number: "STU1005", name: "Student 5", grade: 10, major: "Biology", gpa: "9.1" },
-      { roll_number: "STU1006", name: "Student 6", grade: 11, major: "Computer Science", gpa: "8.9" },
-      { roll_number: "STU1007", name: "Student 7", grade: 12, major: "Mathematics", gpa: "9.2" },
-      { roll_number: "STU1008", name: "Student 8", grade: 9, major: "Physics", gpa: "8.7" },
-      { roll_number: "STU1009", name: "Student 9", grade: 10, major: "Chemistry", gpa: "9.8" },
-      { roll_number: "STU1010", name: "Student 10", grade: 11, major: "Biology", gpa: "9.4" }
-    ]
+    sql: "SELECT roll_number, name, grade, major, gpa FROM students WHERE gpa > 8.5;"
   },
   {
     id: 4,
     name: "Students by Major",
     query: "SELECT roll_number, name, grade, major, gpa FROM students WHERE major = 'Computer Science';",
-    data: [
-      { roll_number: "STU1001", name: "Student 1", grade: 10, major: "Computer Science", gpa: "9.5" },
-      { roll_number: "STU1006", name: "Student 6", grade: 11, major: "Computer Science", gpa: "8.9" },
-      { roll_number: "STU1011", name: "Student 11", grade: 9, major: "Computer Science", gpa: "8.2" },
-      { roll_number: "STU1016", name: "Student 16", grade: 12, major: "Computer Science", gpa: "7.8" },
-      { roll_number: "STU1021", name: "Student 21", grade: 10, major: "Computer Science", gpa: "9.3" },
-      { roll_number: "STU1026", name: "Student 26", grade: 11, major: "Computer Science", gpa: "8.1" },
-      { roll_number: "STU1031", name: "Student 31", grade: 9, major: "Computer Science", gpa: "7.5" },
-      { roll_number: "STU1036", name: "Student 36", grade: 12, major: "Computer Science", gpa: "9.0" }
-    ]
+    sql: "SELECT roll_number, name, grade, major, gpa FROM students WHERE major = 'Computer Science';"
   },
   
   // Teacher queries
@@ -106,25 +91,25 @@ export const queries = [
     id: 6,
     name: "Teacher Data",
     query: "SELECT * FROM teachers;",
-    data: generateLargeDataset(200, "teachers"),
+    sql: "SELECT * FROM teachers;"
   },
   {
     id: 7,
     name: "Experienced Teachers",
     query: "SELECT employee_id, name, department, subject, experience FROM teachers WHERE experience > 10;",
-    data: generateLargeDataset(200, "teachers").filter(teacher => teacher.experience > 10),
+    sql: "SELECT employee_id, name, department, subject, experience FROM teachers WHERE experience > 10;"
   },
   {
     id: 8,
     name: "Science Department Teachers",
     query: "SELECT employee_id, name, subject, experience FROM teachers WHERE department = 'Science';",
-    data: generateLargeDataset(200, "teachers").filter(teacher => teacher.department === 'Science'),
+    sql: "SELECT employee_id, name, subject, experience FROM teachers WHERE department = 'Science';"
   },
   {
     id: 10,
     name: "High Salary Teachers",
     query: "SELECT employee_id, name, department, salary FROM teachers WHERE salary > 60000;",
-    data: generateLargeDataset(200, "teachers").filter(teacher => teacher.salary > 60000),
+    sql: "SELECT employee_id, name, department, salary FROM teachers WHERE salary > 60000;"
   },
   
   // Employee queries
@@ -132,24 +117,24 @@ export const queries = [
     id: 11,
     name: "Employee Data",
     query: "SELECT * FROM employees;",
-    data: generateLargeDataset(300, "employees"),
+    sql: "SELECT * FROM employees;"
   },
   {
     id: 12,
     name: "IT Department Employees",
     query: "SELECT employee_id, name, role, salary FROM employees WHERE department = 'IT';",
-    data: generateLargeDataset(300, "employees").filter(employee => employee.department === 'IT'),
+    sql: "SELECT employee_id, name, role, salary FROM employees WHERE department = 'IT';"
   },
   {
     id: 13,
     name: "Management Staff",
     query: "SELECT employee_id, name, department, role FROM employees WHERE role = 'Manager';",
-    data: generateLargeDataset(300, "employees").filter(employee => employee.role === 'Manager'),
+    sql: "SELECT employee_id, name, department, role FROM employees WHERE role = 'Manager';"
   },
   {
     id: 15,
     name: "High Salary Employees",
     query: "SELECT employee_id, name, department, role, salary FROM employees WHERE salary > 50000;",
-    data: generateLargeDataset(300, "employees").filter(employee => employee.salary > 50000),
+    sql: "SELECT employee_id, name, department, role, salary FROM employees WHERE salary > 50000;"
   }
 ];
