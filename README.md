@@ -2,6 +2,17 @@
 
 A lightweight, high-performance SQL query execution interface built with React and Material UI.
 
+---
+
+## 🔗 Submission Summary
+
+- 🔥 **Live App**: [Project Query on Vercel](https://project-query-phi.vercel.app/)
+- 💻 **GitHub Repository**: [github.com/shashinadh28/Project_Query](https://github.com/shashinadh28/Project_Query)
+- 🧠 **Architecture Diagram**: ![View Diagram](public/system-architecture.svg)
+- 📊 **ER Diagram**: ![View ER](public/er-diagram.svg)
+
+---
+
 
 ## Overview
 
@@ -11,12 +22,14 @@ This application allows analysts to quickly execute SQL queries against various 
 
 The SQL Query Runner follows a component-based architecture with clean separation of concerns:
 
-![System Architecture](public/system-architecture.svg)
 
 The architecture consists of three main layers:
 - **UI Component Layer**: Handles rendering and user interactions
 - **State Management Layer**: Manages application state using React Hooks
 - **Data Services Layer**: Handles data processing, query execution, and formatting
+
+- ![System Architecture](public/system-architecture.svg)
+
 
 ## Data Model
 
@@ -53,12 +66,15 @@ This entity relationship diagram shows the structure of the sample datasets avai
 - **Styling**: SCSS with CSS modules
 - **State Management**: React Hooks and Context API
 
-## Performance Metrics
+## 🚀 Performance Metrics
 
-- **Initial Load Time**: ~1.2s
-- **Time to Interactive**: ~1.5s
-- **Memory Usage**: ~50MB for application with 10k row dataset
-- **First Contentful Paint**: ~800ms
+| Metric                    | Value     |
+|---------------------------|-----------|
+| Initial Load Time         | ~1.2s     |
+| Time to Interactive       | ~1.5s     |
+| First Contentful Paint    | ~800ms    |
+| Memory Usage (10k rows)   | ~50MB     |
+
 
 ## Performance Optimizations
 
@@ -80,7 +96,7 @@ This entity relationship diagram shows the structure of the sample datasets avai
 
 1. **Clone the repository**
    ```
-   git clone https://github.com/yourusername/sql-query-runner.git
+   git clone https://github.com/shashinadh28/Project_Query.git
    cd sql-query-runner
    ```
 
