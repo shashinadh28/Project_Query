@@ -6,7 +6,7 @@ A lightweight, high-performance SQL query execution interface built with React a
 
 ## 🔗 Submission Summary
 
-- 🔥 **Live App**: [Project Query on Vercel](https://project-query-phi.vercel.app/)
+- 🔥 **Live App**: https://project-query-phi.vercel.app/
 - 💻 **GitHub Repository**: [github.com/shashinadh28/Project_Query](https://github.com/shashinadh28/Project_Query)
 - 🧠 **Architecture Diagram**: ![View Diagram](public/system-architecture.svg)
 - 📊 **ER Diagram**: ![View ER](public/er-diagram.svg)
