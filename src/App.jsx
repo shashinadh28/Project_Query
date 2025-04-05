@@ -142,24 +142,31 @@ const App = () => {
       >
         <Box className="app-header" sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ flex: 1 }}></Box>
             <Typography 
               variant="h1" 
               color="primary" 
               sx={{ 
                 fontWeight: 600,
                 fontSize: isMobile ? '1.5rem' : isTablet ? '1.8rem' : '2rem',
+                textAlign: 'center',
+                flex: 1,
+                whiteSpace: 'nowrap',
+                paddingRight: '20px'
               }}
             >
               SQL Query Runner
             </Typography>
             
-            <IconButton 
-              onClick={() => setDarkMode(!darkMode)} 
-              color="inherit" 
-              aria-label="toggle theme"
-            >
-              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <IconButton 
+                onClick={() => setDarkMode(!darkMode)} 
+                color="inherit" 
+                aria-label="toggle theme"
+              >
+                {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Box>
           </Box>
           
           <Typography 
@@ -180,19 +187,22 @@ const App = () => {
               flexDirection: 'column',
               gap: 2, 
               mb: 2,
+              alignItems: 'center'
             }}
           >
-            <Box sx={{ width: '100%', maxWidth: 350 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+            <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
                 Select Data Category:
               </Typography>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="medium">
                 <Select
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                   sx={{ 
                     borderRadius: '4px',
                     bgcolor: 'background.paper',
+                    height: '50px',
+                    fontSize: '1.1rem'
                   }}
                 >
                   {queryCategories.map((category) => (
@@ -204,17 +214,19 @@ const App = () => {
               </FormControl>
             </Box>
             
-            <Box sx={{ width: '100%', maxWidth: 350 }}>
-              <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
+            <Box sx={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 500 }}>
                 Select Query:
               </Typography>
-              <FormControl fullWidth size="small">
+              <FormControl fullWidth size="medium">
                 <Select
                   value={selectedQueryId || ''}
                   onChange={handleQueryChange}
                   sx={{ 
                     borderRadius: '4px',
                     bgcolor: 'background.paper',
+                    height: '50px',
+                    fontSize: '1.1rem'
                   }}
                 >
                   {availableQueries.map((query) => (
