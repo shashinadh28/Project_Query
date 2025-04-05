@@ -8,6 +8,28 @@ A lightweight, high-performance SQL query execution interface built with React a
 
 This application allows analysts to quickly execute SQL queries against various datasets and visualize the results. The interface is designed for usability and performance, with a focus on handling large datasets efficiently.
 
+## System Architecture
+
+The SQL Query Runner follows a component-based architecture with clean separation of concerns:
+
+![System Architecture](public/system-architecture.svg)
+
+The architecture consists of three main layers:
+- **UI Component Layer**: Handles rendering and user interactions
+- **State Management Layer**: Manages application state using React Hooks
+- **Data Services Layer**: Handles data processing, query execution, and formatting
+
+## Data Model
+
+The application works with a relational data model consisting of several interconnected entities:
+
+![ER Diagram](public/er-diagram.svg)
+
+This entity relationship diagram shows the structure of the sample datasets available in the application, including:
+- Users and their relationship to orders
+- Products, categories, and order items
+- Employees and departments
+
 ## Features
 
 - **Interactive Query Editor**: Write custom SQL queries or choose from predefined templates

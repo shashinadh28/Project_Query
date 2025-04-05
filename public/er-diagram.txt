@@ -1,0 +1,92 @@
++------------------+
+|      USERS       |
++------------------+
+| id (PK)          |
+| first_name       |
+| last_name        |
+| email            |
+| phone            |
+| address          |
+| city             |
+| state            |
+| zip              |
+| created_at       |
++------------------+
+        |
+        | 1:N
+        v
++------------------+
+|      ORDERS      |
++------------------+
+| id (PK)          |
+| user_id (FK)     |
+| order_date       |
+| status           |
+| total_amount     |
+| shipping_address |
+| billing_address  |
+| payment_method   |
++------------------+
+        |
+        | 1:N
+        v
++------------------+
+| ORDER_ITEMS      |
++------------------+
+| id (PK)          |
+| order_id (FK)    |
+| product_id (FK)  |
+| quantity         |
+| price            |
+| discount         |
++------------------+
+        |
+        | N:1
+        v
++------------------+
+|     PRODUCTS     |
++------------------+
+| id (PK)          |
+| name             |
+| description      |
+| category_id (FK) |
+| price            |
+| stock            |
+| manufacturer     |
+| created_at       |
++------------------+
+        |
+        | N:1
+        v
++------------------+
+|    CATEGORIES    |
++------------------+
+| id (PK)          |
+| name             |
+| description      |
++------------------+
+
++------------------+
+|    EMPLOYEES     |
++------------------+
+| id (PK)          |
+| first_name       |
+| last_name        |
+| email            |
+| department_id    |
+| position         |
+| hire_date        |
+| salary           |
+| manager_id       |
++------------------+
+        |
+        | N:1
+        v
++------------------+
+|   DEPARTMENTS    |
++------------------+
+| id (PK)          |
+| name             |
+| location         |
+| budget           |
++------------------+ 

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="800" height="750" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 18px sans-serif; fill: #333; }
+    .table { fill: #e7f3fe; stroke: #1976d2; stroke-width: 2; }
+    .header { fill: #1976d2; }
+    .text { font: 12px sans-serif; fill: #333; }
+    .header-text { font: 14px sans-serif; fill: white; font-weight: bold; }
+    .arrow { stroke: #666; stroke-width: 2; marker-end: url(#arrowhead); }
+    .relationship { font: 12px sans-serif; fill: #666; }
+  </style>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+  </defs>
+  
+  <text x="250" y="30" class="title">SQL Query Runner - Data Model</text>
+  
+  <!-- USERS Table -->
+  <rect x="50" y="50" width="160" height="200" rx="5" class="table" />
+  <rect x="50" y="50" width="160" height="30" rx="5" class="header" />
+  <text x="105" y="70" class="header-text">USERS</text>
+  
+  <text x="60" y="100" class="text">id (PK)</text>
+  <text x="60" y="120" class="text">first_name</text>
+  <text x="60" y="140" class="text">last_name</text>
+  <text x="60" y="160" class="text">email</text>
+  <text x="60" y="180" class="text">phone</text>
+  <text x="60" y="200" class="text">address</text>
+  <text x="60" y="220" class="text">city</text>
+  <text x="60" y="240" class="text">state</text>
+  
+  <!-- ORDERS Table -->
+  <rect x="50" y="300" width="160" height="180" rx="5" class="table" />
+  <rect x="50" y="300" width="160" height="30" rx="5" class="header" />
+  <text x="100" y="320" class="header-text">ORDERS</text>
+  
+  <text x="60" y="350" class="text">id (PK)</text>
+  <text x="60" y="370" class="text">user_id (FK)</text>
+  <text x="60" y="390" class="text">order_date</text>
+  <text x="60" y="410" class="text">status</text>
+  <text x="60" y="430" class="text">total_amount</text>
+  <text x="60" y="450" class="text">shipping_address</text>
+  <text x="60" y="470" class="text">payment_method</text>
+  
+  <!-- Relationship USERS-ORDERS -->
+  <line x1="130" y1="250" x2="130" y2="300" class="arrow" />
+  <text x="140" y="280" class="relationship">1:N</text>
+  
+  <!-- ORDER_ITEMS Table -->
+  <rect x="300" y="300" width="160" height="150" rx="5" class="table" />
+  <rect x="300" y="300" width="160" height="30" rx="5" class="header" />
+  <text x="330" y="320" class="header-text">ORDER_ITEMS</text>
+  
+  <text x="310" y="350" class="text">id (PK)</text>
+  <text x="310" y="370" class="text">order_id (FK)</text>
+  <text x="310" y="390" class="text">product_id (FK)</text>
+  <text x="310" y="410" class="text">quantity</text>
+  <text x="310" y="430" class="text">price</text>
+  <text x="310" y="450" class="text">discount</text>
+  
+  <!-- Relationship ORDERS-ORDER_ITEMS -->
+  <line x1="210" y1="380" x2="300" y2="380" class="arrow" />
+  <text x="245" y="370" class="relationship">1:N</text>
+  
+  <!-- PRODUCTS Table -->
+  <rect x="550" y="300" width="160" height="180" rx="5" class="table" />
+  <rect x="550" y="300" width="160" height="30" rx="5" class="header" />
+  <text x="590" y="320" class="header-text">PRODUCTS</text>
+  
+  <text x="560" y="350" class="text">id (PK)</text>
+  <text x="560" y="370" class="text">name</text>
+  <text x="560" y="390" class="text">description</text>
+  <text x="560" y="410" class="text">category_id (FK)</text>
+  <text x="560" y="430" class="text">price</text>
+  <text x="560" y="450" class="text">stock</text>
+  <text x="560" y="470" class="text">manufacturer</text>
+  
+  <!-- Relationship ORDER_ITEMS-PRODUCTS -->
+  <line x1="460" y1="380" x2="550" y2="380" class="arrow" />
+  <text x="495" y="370" class="relationship">N:1</text>
+  
+  <!-- CATEGORIES Table -->
+  <rect x="550" y="530" width="160" height="100" rx="5" class="table" />
+  <rect x="550" y="530" width="160" height="30" rx="5" class="header" />
+  <text x="580" y="550" class="header-text">CATEGORIES</text>
+  
+  <text x="560" y="580" class="text">id (PK)</text>
+  <text x="560" y="600" class="text">name</text>
+  <text x="560" y="620" class="text">description</text>
+  
+  <!-- Relationship PRODUCTS-CATEGORIES -->
+  <line x1="630" y1="480" x2="630" y2="530" class="arrow" />
+  <text x="640" y="510" class="relationship">N:1</text>
+  
+  <!-- EMPLOYEES Table -->
+  <rect x="300" y="530" width="160" height="180" rx="5" class="table" />
+  <rect x="300" y="530" width="160" height="30" rx="5" class="header" />
+  <text x="335" y="550" class="header-text">EMPLOYEES</text>
+  
+  <text x="310" y="580" class="text">id (PK)</text>
+  <text x="310" y="600" class="text">first_name</text>
+  <text x="310" y="620" class="text">last_name</text>
+  <text x="310" y="640" class="text">email</text>
+  <text x="310" y="660" class="text">department_id (FK)</text>
+  <text x="310" y="680" class="text">position</text>
+  <text x="310" y="700" class="text">salary</text>
+  
+  <!-- DEPARTMENTS Table -->
+  <rect x="50" y="530" width="160" height="120" rx="5" class="table" />
+  <rect x="50" y="530" width="160" height="30" rx="5" class="header" />
+  <text x="75" y="550" class="header-text">DEPARTMENTS</text>
+  
+  <text x="60" y="580" class="text">id (PK)</text>
+  <text x="60" y="600" class="text">name</text>
+  <text x="60" y="620" class="text">location</text>
+  <text x="60" y="640" class="text">budget</text>
+  
+  <!-- Relationship EMPLOYEES-DEPARTMENTS -->
+  <line x1="300" y1="650" x2="210" y2="590" class="arrow" />
+  <text x="240" y="630" class="relationship">N:1</text>
+</svg> 
