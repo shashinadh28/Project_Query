@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Box, Typography, FormControl, MenuItem, Select, Switch, FormControlLabel, useMediaQuery } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Typography, FormControl, MenuItem, Select, IconButton, useMediaQuery } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import QueryEditor from './components/QueryEditor';
 import DataTable from './components/DataTable';
 import { executeQuery, queryCategories } from './data';
@@ -151,16 +153,13 @@ const App = () => {
               SQL Query Runner
             </Typography>
             
-            <FormControlLabel
-              control={
-                <Switch 
-                  checked={darkMode} 
-                  onChange={() => setDarkMode(!darkMode)} 
-                  color="primary" 
-                />
-              }
-              label={<Typography variant="body2">{darkMode ? 'Dark Mode' : 'Light Mode'}</Typography>}
-            />
+            <IconButton 
+              onClick={() => setDarkMode(!darkMode)} 
+              color="inherit" 
+              aria-label="toggle theme"
+            >
+              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
           </Box>
           
           <Typography 
@@ -172,19 +171,18 @@ const App = () => {
               fontSize: isMobile ? '0.875rem' : '1rem',
             }}
           >
-            Run SQL queries on sample datasets including users, products, orders, and employee data.
+            Tip: Select a data category, choose a predefined query or write your own SQL, then click "Run Query" to see results.
           </Typography>
           
           <Box 
             sx={{ 
               display: 'flex', 
-              flexDirection: isTablet ? 'column' : 'row',
+              flexDirection: 'column',
               gap: 2, 
               mb: 2,
-              alignItems: isTablet ? 'stretch' : 'center',
             }}
           >
-            <Box sx={{ flex: 1, minWidth: isTablet ? 'auto' : 250 }}>
+            <Box sx={{ width: '100%', maxWidth: 350 }}>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                 Select Data Category:
               </Typography>
@@ -206,7 +204,7 @@ const App = () => {
               </FormControl>
             </Box>
             
-            <Box sx={{ flex: 1, minWidth: isTablet ? 'auto' : 250 }}>
+            <Box sx={{ width: '100%', maxWidth: 350 }}>
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 500 }}>
                 Select Query:
               </Typography>
