@@ -164,7 +164,7 @@ MIT
 
 ---
 
-Created for the Atlan Frontend Internship Task 2025 by [Your Name].
+Created for the Atlan Frontend Internship Task 2025 by Durgashashinadh .
 
 ## Documentation
 
