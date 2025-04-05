@@ -155,9 +155,9 @@ const App = () => {
                 paddingRight: '20px'
               }}
             >
-              SQL Query Runner
-            </Typography>
-            
+          SQL Query Runner
+        </Typography>
+
             <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
               <IconButton 
                 onClick={() => setDarkMode(!darkMode)} 
@@ -230,16 +230,16 @@ const App = () => {
                   }}
                 >
                   {availableQueries.map((query) => (
-                    <MenuItem key={query.id} value={query.id}>
-                      {query.name}
-                    </MenuItem>
-                  ))}
-                </Select>
+              <MenuItem key={query.id} value={query.id}>
+                {query.name}
+              </MenuItem>
+            ))}
+          </Select>
               </FormControl>
             </Box>
-          </Box>
         </Box>
-        
+        </Box>
+
         <Box className="app-content">
           <QueryEditor 
             queryText={queryText} 
@@ -247,11 +247,12 @@ const App = () => {
             onRunQuery={runQuery}
             isRunning={isRunningQuery}
             darkMode={darkMode}
+            queryResults={queryResults}
           />
           
           <DataTable tableData={queryResults} />
         </Box>
-      </Box>
+          </Box>
     </ThemeProvider>
   );
 };

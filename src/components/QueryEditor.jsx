@@ -6,8 +6,10 @@ import {
   Button, 
   CircularProgress,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Tooltip
 } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
 
 /**
  * SQL Query Editor component
@@ -18,7 +20,8 @@ const QueryEditor = ({
   onQueryTextChange, 
   onRunQuery, 
   isRunning,
-  darkMode 
+  darkMode,
+  queryResults = [] 
 }) => {
   const [editorHeight, setEditorHeight] = useState(200);
   const theme = useTheme();
@@ -47,6 +50,57 @@ const QueryEditor = ({
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       onRunQuery();
+    }
+  };
+
+  // Export query results to CSV
+  const exportToCSV = () => {
+    if (!queryResults || queryResults.length === 0) return;
+    
+    try {
+      // Get headers from the first result
+      const headers = Object.keys(queryResults[0]);
+      
+      // Convert data to CSV format
+      const csvRows = [];
+      
+      // Add headers row
+      csvRows.push(headers.join(','));
+      
+      // Add data rows
+      queryResults.forEach(row => {
+        const values = headers.map(header => {
+          const value = row[header];
+          const escaped = String(value).replace(/"/g, '""');
+          return `"${escaped}"`;
+        });
+        csvRows.push(values.join(','));
+      });
+      
+      // Combine into CSV string
+      const csvString = csvRows.join('\n');
+      
+      // Create download link
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      
+      // Set filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `sql-query-results-${timestamp}.csv`;
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      
+      // Append link, trigger download, and clean up
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+    } catch (error) {
+      console.error("Error exporting to CSV:", error);
+      // In a real app, you would show an error message to the user
     }
   };
 
@@ -138,10 +192,31 @@ const QueryEditor = ({
           p: 1.5,
           display: 'flex', 
           justifyContent: 'flex-end',
+          gap: 2,
           borderTop: `1px solid ${theme.palette.divider}`,
           backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)'
         }}
       >
+        <Tooltip title="Export results to CSV file">
+          <span>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={exportToCSV}
+              disabled={!queryResults || queryResults.length === 0}
+              startIcon={<DownloadIcon />}
+              size={isMobile ? "small" : "medium"}
+              sx={{
+                fontWeight: 500,
+                minWidth: isMobile ? '80px' : '120px',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              Export CSV
+            </Button>
+          </span>
+        </Tooltip>
+        
         <Button
           variant="contained"
           color="primary"
