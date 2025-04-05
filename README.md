@@ -316,12 +316,7 @@ I implemented a client-side solution that:
 - CSV export functionality
 - Responsive design
 
-## Architecture
-### System Architecture
-![System Architecture](public/system-architecture.svg)
 
-### Data Model
-![ER Diagram](public/er-diagram.svg)
 
 ## Challenges and Solutions
 1. **Large Dataset Handling**
@@ -345,7 +340,7 @@ I implemented a client-side solution that:
 - Query execution time tracking
 
 ## Live Demo
-Visit the deployed application at: https://project-queryy.vercel.app/
+Visit the deployed application at: https://project-query-phi.vercel.app/
 
 
 ## OUTPUT
