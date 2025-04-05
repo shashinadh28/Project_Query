@@ -8,15 +8,29 @@ A lightweight, high-performance SQL query execution interface built with React a
 
 - 🔥 **Live App**: https://project-query-phi.vercel.app/
 - 💻 **GitHub Repository**: [github.com/shashinadh28/Project_Query](https://github.com/shashinadh28/Project_Query)
-- 🧠 **Architecture Diagram**: ![View Diagram](public/system-architecture.svg)
-- 📊 **ER Diagram**: ![View ER](public/er-diagram.svg)
-
+ 
 ---
 
 
 ## Overview
 
-This application allows analysts to quickly execute SQL queries against various datasets and visualize the results. The interface is designed for usability and performance, with a focus on handling large datasets efficiently.
+Overview
+
+SQL Query Runner is a React-based application that allows users to:
+
+Write and execute SQL queries in a syntax-highlighted editor
+
+Choose from predefined queries categorized by data type (Students, Teachers, Employees)
+
+View query results in a paginated, sortable table
+
+Export query results to CSV format
+
+Toggle between light and dark modes
+
+Handle large datasets efficiently with optimized performance features
+
+The interface is designed for usability and scalability with a clean architecture and responsive layout.
 
 ## System Architecture
 
