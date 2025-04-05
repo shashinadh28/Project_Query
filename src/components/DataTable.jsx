@@ -430,8 +430,8 @@ const DataTable = ({ tableData = [] }) => {
           </Typography>
           
           <FormControl size="small" variant="standard" sx={{ minWidth: 80 }}>
-            <Select
-              value={rowsPerPage}
+          <Select
+            value={rowsPerPage}
               onChange={handleChangeRowsPerPage}
               displayEmpty
               sx={{ 
@@ -451,8 +451,8 @@ const DataTable = ({ tableData = [] }) => {
               {tableData.length > 500 && (
                 <MenuItem value={500}>500 rows</MenuItem>
               )}
-            </Select>
-          </FormControl>
+          </Select>
+        </FormControl>
         </Box>
       </Box>
       
@@ -465,7 +465,7 @@ const DataTable = ({ tableData = [] }) => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell
+                <TableCell 
                   key={column}
                   align="left"
                   sortDirection={orderBy === column ? order : false}
@@ -508,7 +508,7 @@ const DataTable = ({ tableData = [] }) => {
           </TableHead>
           <TableBody>
             {sortedData.map((row, rowIndex) => (
-              <TableRow
+              <TableRow 
                 key={rowIndex}
                 hover
                 sx={{ 
@@ -567,4 +567,4 @@ const DataTable = ({ tableData = [] }) => {
   );
 };
 
-export default DataTable; 
+export default DataTable;

@@ -349,14 +349,13 @@ Visit the deployed application at: https://project-query-phi.vercel.app/
 
 
 ## OUTPUT
+![Screenshot 2025-04-05 124209](https://github.com/user-attachments/assets/3d09a362-eed0-410e-963a-06c075d197ba)
 
-![Screenshot 2025-03-31 220711](https://github.com/user-attachments/assets/b113d896-1233-4694-94d4-ab1cd5b5d2a3)
+<<<<<<< Updated upstream
+ ![Screenshot 2025-04-05 124226](https://github.com/user-attachments/assets/d184668f-e08a-4df5-83db-c53b250a7b14)
 
-![Screenshot 2025-03-31 221341](https://github.com/user-attachments/assets/bfa44785-b001-44d3-8889-2b2e11223c3e)
+![Screenshot 2025-04-05 124237](https://github.com/user-attachments/assets/a43acdcc-50a2-4365-88c5-2f9fbe4637d4)
+=======
+>>>>>>> Stashed changes
 
-
-![Screenshot 2025-03-31 231147](https://github.com/user-attachments/assets/84509b0f-effd-4456-a7d8-ef02cf13083c)
-
-
-![Screenshot 2025-03-31 231030](https://github.com/user-attachments/assets/8b4e6155-8ae5-45d9-b646-1551ee21fe1c)
-
+![Screenshot 2025-04-05 124247](https://github.com/user-attachments/assets/575a1551-32b7-40c5-9b33-4d4899c9f197)
