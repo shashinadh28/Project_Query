@@ -2,8 +2,6 @@
 
 A lightweight, high-performance SQL query execution interface built with React and Material UI.
 
-![SQL Query Runner](public/app-screenshot.png)
-
 ## Overview
 
 This application allows analysts to quickly execute SQL queries against various datasets and visualize the results. The interface is designed for usability and performance, with a focus on handling large datasets efficiently.
